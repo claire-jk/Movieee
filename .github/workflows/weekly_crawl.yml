@@ -1,0 +1,28 @@
+name: Weekly Bonus Crawler
+
+on:
+  schedule:
+    # 💡 設定每週三中午 12:00 (UTC 4:00) 執行一次
+    - cron: '0 4 * * 3'
+  workflow_dispatch: # 允許你手動點擊按鈕執行測試
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Crawler
+        env:
+          # 💡 將 Secret 注入環境變數
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node bonusCrawler.js

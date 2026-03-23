@@ -1,76 +1,79 @@
 import admin from 'firebase-admin';
-import { createRequire } from 'module';
 import puppeteer from 'puppeteer';
 
-const require = createRequire(import.meta.url);
-const serviceAccount = require('./serviceAccount.json');
+// 💡 改從環境變數讀取憑證，增加安全性
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 if (!admin.apps.length) {
-  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
 }
 const db = admin.firestore();
 
 async function runCrawler() {
-  console.log('------------------------------------');
-  console.log('🎯 [目標] 百老匯影城卡片式佈局抓取');
-  console.log('------------------------------------');
+  console.log('🚀 開始執行每週百老匯特典抓取任務...');
 
-  const browser = await puppeteer.launch({ headless: "new" });
+  // 💡 GitHub Actions 必須加上這些 args 才能順利啟動瀏覽器
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+
   const page = await browser.newPage();
 
   try {
+    // 進入網頁並等待內容載入
     await page.goto('https://www.broadway-cineplex.com.tw/news.html', { 
-      waitUntil: 'networkidle2' 
+      waitUntil: 'networkidle2',
+      timeout: 60000 
     });
 
-    // 💡 根據截圖結構：抓取包含標題與圖片的卡片區塊
+    // 抓取特典資料
     const data = await page.evaluate(() => {
-      // 假設卡片容器是 news_item 或類似的 div
-      // 我們抓取所有包含「特典」字眼的區塊
-      const cards = Array.from(document.querySelectorAll('div, li')).filter(el => 
-        el.innerText && el.innerText.includes('特典')
-      );
-
-      return cards.map(card => {
-        // 標題通常在 h4 或特定的 p 標籤中
-        const titleEl = card.querySelector('h4, p, .title');
-        const imgEl = card.querySelector('img');
-        const dateEl = card.querySelector('.date, span'); // 截圖下方有日期
-
-        return {
-          title: titleEl ? titleEl.innerText.trim() : '',
-          image: imgEl ? imgEl.src : '',
-          date: dateEl ? dateEl.innerText.trim() : ''
-        };
-      }).filter(item => item.title.includes('特典') && item.image !== '');
+      // 百老匯的結構通常是 .news_list 裡面的 .item 或 li
+      // 這裡採用更精準的選擇器嘗試抓取
+      const items = Array.from(document.querySelectorAll('.news_list li, .item, li'));
+      
+      return items.map(el => {
+        const title = el.querySelector('h4, p, .title')?.innerText.trim() || '';
+        const img = el.querySelector('img')?.src || '';
+        const date = el.querySelector('.date, span')?.innerText.trim() || '';
+        return { title, img, date };
+      }).filter(item => item.title.includes('特典') && item.img !== '');
     });
 
-    console.log(`📊 成功偵測到 ${data.length} 個特典卡片`);
+    console.log(`📊 找到 ${data.length} 個相關特典`);
 
-    const results = data.map(item => ({
-      movieTitle: item.title.match(/《(.+?)》/)?.[1] || item.title,
-      bonusName: item.title,
-      cinema: '百老匯',
-      image: item.image,
-      startDate: item.date, // 截圖中的日期如 2026-03-18
-      createdAt: new Date().toISOString()
-    }));
-
-    if (results.length > 0) {
+    if (data.length > 0) {
       const batch = db.batch();
-      results.forEach(res => {
-        const id = res.bonusName.replace(/[\/\\#?\[\]]/g, '_');
-        batch.set(db.collection('specials').doc(id), res, { merge: true });
-      });
-      await batch.commit();
-      console.log('🎉 [大功告成] 百老匯特典已更新至 Firebase！');
-    }
+      
+      data.forEach(item => {
+        const movieTitle = item.title.match(/《(.+?)》/)?.[1] || item.title;
+        const res = {
+          movieTitle: movieTitle,
+          bonusName: item.title,
+          cinema: '百老匯',
+          image: item.img,
+          startDate: item.date,
+          createdAt: new Date().toISOString()
+          // 💡 注意：這裡不重置 status，使用 merge: true 就不會覆蓋掉使用者的回報
+        };
 
+        // 使用標題作為 ID 避免重複建立
+        const docId = item.title.replace(/[\/\\#?\[\]]/g, '_');
+        const docRef = db.collection('specials').doc(docId);
+        batch.set(docRef, res, { merge: true });
+      });
+
+      await batch.commit();
+      console.log('✅ Firebase 資料更新成功！');
+    }
   } catch (err) {
-    console.error('❌ 抓取失敗:', err.message);
+    console.error('❌ 抓取過程發生錯誤:', err);
+    process.exit(1); // 讓 GitHub Action 顯示失敗
   } finally {
     await browser.close();
-    process.exit();
   }
 }
 

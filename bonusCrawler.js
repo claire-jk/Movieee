@@ -8,33 +8,27 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function runCrawler() {
-  console.log('🚀 [Debug 模式] 開始抓取百老匯...');
+  // 💡 故意改掉標題，用來確認 GitHub 有沒有抓到最新版
+  console.log('🚀 [版本檢查] 這是我剛才更新的 V3 版本！');
 
   try {
     const url = 'https://www.broadway-cineplex.com.tw/News/GetSPNews';
-    
     const response = await axios.get(url, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            'Referer': 'https://www.broadway-cineplex.com.tw/news.html'
-        }
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Referer': 'https://www.broadway-cineplex.com.tw/news.html'
+      }
     });
 
-    // --- 🕵️ 重點 Debug 區段 ---
-    console.log('📡 API 回傳狀態碼:', response.status);
+    console.log('📡 API 原始回傳長度:', JSON.stringify(response.data).length);
     
-    // 把原始資料轉成字串印出來 (只印前 500 個字，避免 Log 太長)
-    const rawData = JSON.stringify(response.data);
-    console.log('📥 原始回傳內容 (前500字):', rawData.substring(0, 500));
-
-    if (!response.data.newsdata) {
-        console.log('❌ 錯誤：回傳格式中找不到 newsdata 欄位！');
-        return;
+    // 如果長度太短 (例如小於 100)，代表被擋住了
+    if (JSON.stringify(response.data).length < 100) {
+        console.log('⚠️ 警告：回傳內容異常短小，可能是被封鎖了。內容：', response.data);
     }
-    // --- End Debug ---
 
-    const newsGroups = response.data.newsdata;
+    const newsGroups = response.data.newsdata || [];
     const officialData = [];
 
     newsGroups.forEach(group => {
@@ -42,19 +36,36 @@ async function runCrawler() {
         const item = group[key];
         if (item && item.title) {
           if (item.title.includes('特典') || item.title.includes('《')) {
-            officialData.push({ title: item.title });
+            officialData.push({
+              title: item.title.trim(),
+              img: item.img1,
+              date: item.releaseDate
+            });
           }
         }
       });
     });
 
-    console.log(`📊 最終篩選結果筆數: ${officialData.length}`);
+    console.log(`✅ 最終找到 ${officialData.length} 筆資料`);
 
-  } catch (err) {
-    console.error('❌ 請求徹底失敗:', err.message);
-    if (err.response) {
-        console.log('🚫 伺服器回傳錯誤內容:', JSON.stringify(err.response.data));
+    if (officialData.length > 0) {
+      const batch = db.batch();
+      officialData.forEach(item => {
+        const docId = `broadway_${item.title.replace(/[\/\\#?\[\]]/g, '_')}`;
+        batch.set(db.collection('specials').doc(docId), {
+          movieTitle: item.title.match(/《(.+?)》/)?.[1] || item.title,
+          bonusName: item.title,
+          cinema: '百老匯',
+          image: item.img,
+          startDate: item.date,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+      });
+      await batch.commit();
+      console.log('🎉 Firebase 同步成功！');
     }
+  } catch (err) {
+    console.error('❌ 抓取錯誤:', err.message);
   }
 }
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import admin from 'firebase-admin';
 
-// 初始化 Firebase
+// 1. 初始化 Firebase (維持原樣)
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 if (!admin.apps.length) {
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
@@ -9,75 +9,86 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function runCrawler() {
-  console.log('🚀 正在透過 GetSPNews API 抓取百老匯特典...');
+  console.log('🚀 [百老匯] 嘗試模擬官網 XHR 請求...');
 
   try {
-    // 💡 這是從你的截圖中偵測到的真實 API 路徑
-    const url = 'https://www.broadway-cineplex.com.tw/G_API/Home/GetSPNews'; 
+    // 💡 根據你提供的 Request URL
+    const url = 'https://www.broadway-cineplex.com.tw/News/GetSPNews'; 
     
-    const response = await axios.post(url, {}, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.broadway-cineplex.com.tw/news.html',
-        'X-Requested-With': 'XMLHttpRequest'
+    // 2. 模擬瀏覽器的 Headers (這是防爬蟲的關鍵)
+    const response = await axios.get(url, {
+      params: {
+        // 如果 API 需要帶時間戳防快取，可以在這裡加，通常不用
+        _: Date.now() 
       },
-      timeout: 20000
+      headers: {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Referer': 'https://www.broadway-cineplex.com.tw/news.html',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest', // 關鍵：告訴伺服器這是非同步請求
+      },
+      timeout: 15000
     });
 
-    // 取得資料列表 (百老匯 API 通常回傳陣列)
+    // 取得資料
     const list = Array.isArray(response.data) ? response.data : (response.data.data || []);
-    console.log(`📊 API 成功回傳 ${list.length} 筆原始資料`);
+    console.log(`📊 API 成功回傳筆數: ${list.length}`);
 
-    // 篩選標題包含「特典」、「《」或「贈」的項目
+    // 如果抓到 0 筆，印出原始回應檢查格式
+    if (list.length === 0) {
+      console.log('⚠️ API 回傳內容為空，原始 Response:', JSON.stringify(response.data));
+    }
+
+    // 3. 篩選與格式化
     const officialData = list.filter(item => {
-      const title = item.Subject || ''; // 百老匯 API 標題欄位通常是 Subject
+      const title = item.Subject || item.Title || '';
       return title.includes('特典') || title.includes('《') || title.includes('贈');
     }).map(item => ({
-      title: item.Subject,
-      // 組合完整圖片網址，API 回傳通常是相對路徑
-      img: item.Poster.startsWith('http') ? item.Poster : `https://www.broadway-cineplex.com.tw${item.Poster}`,
-      date: item.PostDate ? item.PostDate.split('T')[0] : '2026-03-23'
+      title: item.Subject || item.Title,
+      img: item.Poster || item.Image,
+      date: item.PostDate || item.Date || '2026-03-23'
     }));
 
-    console.log(`✅ 篩選出 ${officialData.length} 個符合條件的特典`);
+    console.log(`✅ 過濾後符合特典條件: ${officialData.length} 筆`);
 
+    // 4. 同步至 Firebase
     if (officialData.length > 0) {
       const batch = db.batch();
-      const currentOfficialIds = [];
+      const currentIds = [];
 
       officialData.forEach(item => {
-        const docId = item.title.replace(/[\/\\#?\[\]]/g, '_');
-        currentOfficialIds.push(docId);
+        const docId = `broadway_${item.title.replace(/[\/\\#?\[\]]/g, '_')}`;
+        currentIds.push(docId);
 
         const movieTitle = item.title.match(/《(.+?)》/)?.[1] || item.title;
-        const res = {
+        const finalImg = item.img.startsWith('http') ? item.img : `https://www.broadway-cineplex.com.tw${item.img}`;
+
+        batch.set(db.collection('specials').doc(docId), {
           movieTitle,
           bonusName: item.title,
           cinema: '百老匯',
-          image: item.img,
-          startDate: item.date,
+          image: finalImg,
+          startDate: item.date.split('T')[0],
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        };
-
-        batch.set(db.collection('specials').doc(docId), res, { merge: true });
-        console.log(`📍 準備同步: ${item.title}`);
+        }, { merge: true });
       });
 
-      // 清理已下架項目
-      const allDocs = await db.collection('specials').where('cinema', '==', '百老匯').get();
-      allDocs.forEach(doc => {
-        if (!currentOfficialIds.includes(doc.id)) {
-          batch.delete(doc.ref);
-        }
+      // 清理舊資料
+      const oldDocs = await db.collection('specials').where('cinema', '==', '百老匯').get();
+      oldDocs.forEach(doc => {
+        if (!currentIds.includes(doc.id)) batch.delete(doc.ref);
       });
 
       await batch.commit();
-      console.log('🎉 [大功告成] 特典資料已成功更新至 Firebase！');
+      console.log('🎉 Firebase 更新成功！');
     }
 
   } catch (err) {
-    console.error('❌ 抓取失敗:', err.message);
-    process.exit(1);
+    console.error('❌ 請求失敗:', err.message);
+    if (err.response) {
+      console.error('狀態碼:', err.response.status);
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import admin from 'firebase-admin';
 
-// ✅ 正確方式：從環境變數讀取
+// ✅ 讀取 GitHub Secrets
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 if (!admin.apps.length) {
@@ -12,8 +12,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function runCrawler() {
-  // 💡 故意改掉標題，用來確認 GitHub 有沒有抓到最新版
-  console.log('🚀 [版本檢查] 這是我剛才更新的 V3 版本！');
+  console.log('🚀 [版本檢查] 正式執行 broadwayRunner.js V3 (特典爬蟲)');
 
   try {
     const url = 'https://www.broadway-cineplex.com.tw/News/GetSPNews';
@@ -25,23 +24,18 @@ async function runCrawler() {
       }
     });
 
-    console.log('📡 API 原始回傳長度:', JSON.stringify(response.data).length);
-    
-    // 如果長度太短 (例如小於 100)，代表被擋住了
-    if (JSON.stringify(response.data).length < 100) {
-        console.log('⚠️ 警告：回傳內容異常短小，可能是被封鎖了。內容：', response.data);
-    }
-
     const newsGroups = response.data.newsdata || [];
     const officialData = [];
 
+    // 🏆 攤平結構：從 object1, object2, object3 提取
     newsGroups.forEach(group => {
       ['object1', 'object2', 'object3'].forEach(key => {
         const item = group[key];
         if (item && item.title) {
-          if (item.title.includes('特典') || item.title.includes('《')) {
+          const t = item.title.trim();
+          if (t.includes('特典') || t.includes('《')) {
             officialData.push({
-              title: item.title.trim(),
+              title: t,
               img: item.img1,
               date: item.releaseDate
             });
@@ -50,26 +44,45 @@ async function runCrawler() {
       });
     });
 
-    console.log(`✅ 最終找到 ${officialData.length} 筆資料`);
+    console.log(`📊 找到符合條件的特典共 ${officialData.length} 筆`);
 
     if (officialData.length > 0) {
       const batch = db.batch();
+      const currentIds = [];
+
       officialData.forEach(item => {
         const docId = `broadway_${item.title.replace(/[\/\\#?\[\]]/g, '_')}`;
+        currentIds.push(docId);
+
+        const movieTitle = item.title.match(/《(.+?)》/)?.[1] || item.title;
+
         batch.set(db.collection('specials').doc(docId), {
-          movieTitle: item.title.match(/《(.+?)》/)?.[1] || item.title,
+          movieTitle,
           bonusName: item.title,
           cinema: '百老匯',
           image: item.img,
           startDate: item.date,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         }, { merge: true });
+        
+        console.log(`📍 準備同步到 Firebase: ${item.title}`);
       });
+
+      // 清理舊資料：確保只留下官網目前還有的
+      const oldDocs = await db.collection('specials').where('cinema', '==', '百老匯').get();
+      oldDocs.forEach(doc => {
+        if (!currentIds.includes(doc.id)) {
+          batch.delete(doc.ref);
+          console.log(`🗑️ 移除過期特典: ${doc.id}`);
+        }
+      });
+
       await batch.commit();
-      console.log('🎉 Firebase 同步成功！');
+      console.log('🎉 [大功告成] 百老匯特典牆更新成功！');
     }
+
   } catch (err) {
-    console.error('❌ 抓取錯誤:', err.message);
+    console.error('❌ 抓取失敗:', err.message);
   }
 }
 

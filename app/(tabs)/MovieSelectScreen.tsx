@@ -14,7 +14,7 @@ import {
     View,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { RootStackParamList } from './index'; // 引入類型
+import { RootStackParamList } from './TabNavigator'; // 引入類型
 
 const API_KEY = '28c58d3192a34321c54272d533d637dd';
 

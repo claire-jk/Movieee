@@ -1,69 +1,57 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { CalendarClock, Home } from 'lucide-react-native';
-import React from 'react';
+import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import TabNavigator from './TabNavigator';
 
-// 匯入頁面組件
-import CinemaScheduleScreen from './CinemaScheduleScreen';
-import CinemaScreen from './CinemaScreen';
-import MovieSelectScreen from './MovieSelectScreen';
+/**
+ * Expo Router 進入點
+ * 負責：處理匿名登入初始化、渲染底部導航
+ */
+export default function Index() {
+    const [initializing, setInitializing] = React.useState(true);
 
-// 定義導航參數類型
-export type RootStackParamList = {
-  MovieSelect: undefined;
-  CinemaDetail: { movie: string; version: string };
-};
+    useEffect(() => {
+        const auth = getAuth();
+        
+        // 監聽登入狀態變化
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // 如果沒有使用者，執行匿名登入
+                signInAnonymously(auth)
+                    .then(() => {
+                        console.log("✅ [Auth] 匿名帳號已自動開啟");
+                    })
+                    .catch((error) => {
+                        console.error("❌ [Auth] 匿名登入失敗:", error);
+                    })
+                    .finally(() => setInitializing(false));
+            } else {
+                console.log("👤 [Auth] 當前使用者 UID:", user.uid);
+                setInitializing(false);
+            }
+        });
 
-export type RootTabParamList = {
-  HomeTab: undefined;
-  Schedules: undefined;
-};
+        // 組件卸載時取消監聽
+        return unsubscribe;
+    }, []);
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<RootTabParamList>();
+    // 讀取中畫面（可根據需求自定義）
+    if (initializing) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FF4081" />
+            </View>
+        );
+    }
 
-// 首頁的堆疊導航：處理選電影到影城列表的跳轉
-function HomeStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MovieSelect" component={MovieSelectScreen} />
-      <Stack.Screen name="CinemaDetail" component={CinemaScreen} />
-    </Stack.Navigator>
-  );
+    return <TabNavigator />;
 }
 
-export default function TabNavigator() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#6200EE',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          height: 70,
-          paddingBottom: 12,
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 0,
-          elevation: 10,
-        }
-      }}
-    >
-      <Tab.Screen 
-        name="HomeTab" 
-        component={HomeStack} 
-        options={{
-          title: '找電影',
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
-        }}
-      />
-      <Tab.Screen 
-        name="Schedules" 
-        component={CinemaScheduleScreen} 
-        options={{
-          title: '更新時間',
-          tabBarIcon: ({ color, size }) => <CalendarClock color={color} size={size} />,
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F8F9FA',
+    },
+});

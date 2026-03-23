@@ -1,7 +1,6 @@
 import axios from 'axios';
 import admin from 'firebase-admin';
 
-// 1. 初始化 Firebase
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 if (!admin.apps.length) {
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
@@ -9,31 +8,40 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function runCrawler() {
-  console.log('🚀 [百老匯] 啟動正式 API 抓取同步任務...');
+  console.log('🚀 [百老匯] 啟動 Debug 模式抓取...');
 
   try {
     const url = 'https://www.broadway-cineplex.com.tw/News/GetSPNews';
     
-    // 使用剛才測試成功的 Header 設定
     const response = await axios.get(url, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            'Referer': 'https://www.broadway-cineplex.com.tw/news.html'
+            'Referer': 'https://www.broadway-cineplex.com.tw/news.html',
+            'Accept': 'application/json, text/javascript, */*; q=0.01'
         },
         timeout: 15000
     });
 
+    // 🕵️ DEBUG: 檢查 API 到底回傳了什麼
+    console.log('📡 回傳狀態碼:', response.status);
+    console.log('📡 回傳資料類型:', typeof response.data);
+    
+    // 如果資料是字串，可能被擋掉回傳了 HTML 或空字串
+    if (typeof response.data === 'string') {
+        console.log('⚠️ 注意：回傳的是字串而非 JSON，前 100 字為:', response.data.substring(0, 100));
+    }
+
     const newsGroups = response.data.newsdata || [];
+    console.log(`📊 newsdata 陣列長度: ${newsGroups.length}`);
+
     const officialData = [];
 
-    // 2. 執行剛才測試成功的「攤平」與「過濾」邏輯
     newsGroups.forEach(group => {
       ['object1', 'object2', 'object3'].forEach(key => {
         const item = group[key];
         if (item && item.title) {
           const t = item.title.trim();
-          // 過濾條件：標題含「特典」或《》
           if (t.includes('特典') || t.includes('《')) {
             officialData.push({
               title: t,
@@ -45,19 +53,16 @@ async function runCrawler() {
       });
     });
 
-    console.log(`📊 成功過濾出 ${officialData.length} 筆特典資料`);
+    console.log(`✅ 最終篩選出 ${officialData.length} 筆特典`);
 
-    // 3. 同步至 Firebase
+    // 只有在真的有資料時才寫入 Firebase
     if (officialData.length > 0) {
       const batch = db.batch();
       const currentIds = [];
 
       officialData.forEach(item => {
-        // 使用標題做唯一 ID (清理特殊符號)
         const docId = `broadway_${item.title.replace(/[\/\\#?\[\]]/g, '_')}`;
         currentIds.push(docId);
-
-        // 提取電影片名
         const movieTitle = item.title.match(/《(.+?)》/)?.[1] || item.title;
 
         batch.set(db.collection('specials').doc(docId), {
@@ -68,28 +73,19 @@ async function runCrawler() {
           startDate: item.date,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         }, { merge: true });
-        
-        console.log(`📍 準備同步: ${item.title}`);
-      });
-
-      // 4. 清理已下架項目 (選配：如果官網沒了，Firebase 也刪除)
-      const oldDocs = await db.collection('specials').where('cinema', '==', '百老匯').get();
-      oldDocs.forEach(doc => {
-        if (!currentIds.includes(doc.id)) {
-          batch.delete(doc.ref);
-          console.log(`🗑️ 移除過期特典: ${doc.id}`);
-        }
       });
 
       await batch.commit();
-      console.log('🎉 [大功告成] 百老匯特典已完美同步至 Firebase！');
+      console.log('🎉 Firebase 同步完成！');
     } else {
-      console.log('⚠️ 沒抓到任何符合條件的特典，略過更新。');
+        // 如果是 0 筆，印出其中一組資料來看看結構是否有變
+        if (newsGroups.length > 0) {
+            console.log('🔎 第一組資料內容:', JSON.stringify(newsGroups[0]));
+        }
     }
 
   } catch (err) {
-    console.error('❌ 執行失敗:', err.message);
-    process.exit(1);
+    console.error('❌ 抓取異常:', err.message);
   }
 }
 

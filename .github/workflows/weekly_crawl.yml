@@ -25,4 +25,4 @@ jobs:
         env:
           # 💡 將 Secret 注入環境變數
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node bonusCrawler.js
+        run: node broadwayRunner.js

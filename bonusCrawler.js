@@ -8,48 +8,59 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function runCrawler() {
-  console.log('🚀 開始執行「深度掃描」同步任務...');
+  console.log('🚀 開始執行「終極偽裝」同步任務...');
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    args: [
+      '--no-sandbox', 
+      '--disable-setuid-sandbox',
+      '--disable-blink-features=AutomationControlled' // 隱藏自動化特徵
+    ]
   });
   const page = await browser.newPage();
 
+  // 💡 偽裝成真正的電腦瀏覽器
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36');
+
   try {
-    // 設定較大的視窗確保所有內容被渲染
     await page.setViewport({ width: 1280, height: 2000 });
     
-    // 進入網頁
+    // 前往網頁並等待網路完全安靜下來
     await page.goto('https://www.broadway-cineplex.com.tw/news.html', { 
-      waitUntil: 'networkidle2',
+      waitUntil: 'networkidle0', // 等待所有資源加載完畢
       timeout: 60000 
     });
 
-    // 💡 關鍵：等待網頁渲染完成，不指定特定的 class，改等 img 標籤出現
-    await page.waitForSelector('img', { timeout: 10000 });
+    // 額外多等 3 秒，確保 AJAX 內容跑完
+    await new Promise(r => setTimeout(r, 3000));
 
-    // 💡 暴力掃描：直接抓取頁面上所有包含圖片的區塊
     const officialData = await page.evaluate(() => {
       const results = [];
       const seenTitles = new Set();
       
-      // 掃描所有的 li, div, a 標籤
-      const elements = document.querySelectorAll('li, .item, a, div[style*="background-image"]');
+      // 💡 策略：抓取所有圖片，然後往上找它們的父容器
+      const images = document.querySelectorAll('img');
       
-      elements.forEach(el => {
-        const title = el.innerText?.trim().split('\n')[0] || ''; // 抓第一行當標題
-        const imgEl = el.querySelector('img');
-        const img = imgEl ? imgEl.src : '';
-        const dateMatch = el.innerText?.match(/\d{4}-\d{2}-\d{2}/); // 尋找 YYYY-MM-DD 格式
+      images.forEach(img => {
+        const src = img.src;
+        if (!src || !src.startsWith('http')) return;
+
+        // 往上找最近的容器 (可能是 li 或 div)
+        const container = img.closest('li, .item, .news_list_item, div[class*="item"]');
+        if (!container) return;
+
+        const text = container.innerText || '';
+        const title = text.split('\n').find(line => line.trim().length > 2) || '';
+        const dateMatch = text.match(/\d{4}-\d{2}-\d{2}/);
         const date = dateMatch ? dateMatch[0] : '2026-03-23';
 
-        // 判斷邏輯：有標題、有圖片網址、標題包含關鍵字、且沒抓過
-        if (
-          (title.includes('特典') || title.includes('《') || title.includes('贈')) && 
-          img.startsWith('http') && 
-          !seenTitles.has(title)
-        ) {
-          results.push({ title, img, date });
+        // 只要包含關鍵字，且標題不重複
+        if ((text.includes('特典') || text.includes('《') || text.includes('贈')) && !seenTitles.has(title)) {
+          results.push({
+            title: title.trim(),
+            img: src,
+            date: date
+          });
           seenTitles.add(title);
         }
       });
@@ -57,7 +68,11 @@ async function runCrawler() {
     });
 
     console.log(`📊 掃描結束，實際抓到項目數量: ${officialData.length}`);
-    officialData.forEach(item => console.log(`📍 偵測到: ${item.title}`));
+    
+    // 列出所有抓到的標題，方便在 GitHub Actions 日誌檢查
+    officialData.forEach((item, index) => {
+      console.log(`[${index + 1}] 偵測到: ${item.title}`);
+    });
 
     if (officialData.length > 0) {
       const batch = db.batch();
@@ -80,11 +95,11 @@ async function runCrawler() {
         batch.set(db.collection('specials').doc(docId), res, { merge: true });
       });
 
-      // 💡 同步刪除邏輯：如果資料庫有「百老匯」的資料但官網沒這筆，就刪除
+      // 同步刪除舊資料
       const allDocs = await db.collection('specials').where('cinema', '==', '百老匯').get();
       allDocs.forEach(doc => {
         if (!currentOfficialIds.includes(doc.id)) {
-          console.log(`🗑️ 官網已下架，刪除: ${doc.id}`);
+          console.log(`🗑️ 刪除已下架項目: ${doc.id}`);
           batch.delete(doc.ref);
         }
       });
@@ -92,7 +107,9 @@ async function runCrawler() {
       await batch.commit();
       console.log('✅ 同步完成！');
     } else {
-      console.log('❌ 警告：依然抓不到任何資料，請檢查網頁是否擋掉爬蟲。');
+      // 💡 如果還是 0，把整個網頁的 HTML 印出來 debug (這行很重要)
+      const body = await page.evaluate(() => document.body.innerText.substring(0, 500));
+      console.log('❌ 依然抓不到資料。網頁開頭內容：', body);
     }
   } catch (err) {
     console.error('❌ 發生錯誤:', err);

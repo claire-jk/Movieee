@@ -1,5 +1,5 @@
 import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
-import { useNavigation } from '@react-navigation/native'; // 改用這個
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -14,8 +14,9 @@ import {
     View,
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { RootStackParamList } from './TabNavigator'; // 引入類型
+import { RootStackParamList } from './TabNavigator';
 
+// TMDB API Key
 const API_KEY = '28c58d3192a34321c54272d533d637dd';
 
 const movieVersions = [
@@ -30,7 +31,6 @@ const movieVersions = [
 ];
 
 export default function MovieSelectScreen() {
-    // 取得導航對象
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -51,20 +51,31 @@ export default function MovieSelectScreen() {
     };
 
     useEffect(() => {
-        fetchNowPlaying();
+        fetchNowPlayingTW();
     }, []);
 
-    const fetchNowPlaying = async () => {
+    const fetchNowPlayingTW = async () => {
         try {
-            const res = await axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=zh-TW`);
-            const formattedMovies = res.data.results.map((m: any) => ({
-                label: m.title,
-                value: m.id.toString(),
-                data: m,
-            }));
+            setLoading(true);
+            // 🔥 重點：加入 region=TW，這會讓結果符合台灣目前的院線清單
+            const res = await axios.get(
+                `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=zh-TW&region=TW`
+            );
+            
+            // 過濾並格式化資料
+            const formattedMovies = res.data.results
+                .filter((m: any) => m.title) // 確保有標題
+                .map((m: any) => ({
+                    label: m.title,
+                    value: m.id.toString(),
+                    data: m,
+                }));
+            
+            // 按照熱度或標題排序（選用）
             setMovies(formattedMovies);
+            console.log(`✅ 已成功載入 ${formattedMovies.length} 部台灣上映中電影`);
         } catch (err) {
-            console.log('Fetch Error:', err);
+            console.error('TMDB Fetch Error:', err);
         } finally {
             setLoading(false);
         }
@@ -72,7 +83,6 @@ export default function MovieSelectScreen() {
 
     const handleNext = () => {
         if (!selectedMovie) return;
-        // 使用導航跳轉到 CinemaDetail，並帶上參數
         navigation.navigate('CinemaDetail', {
             movie: JSON.stringify(selectedMovie.data),
             version: selectedVersion,
@@ -92,7 +102,8 @@ export default function MovieSelectScreen() {
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
             <View style={styles.content}>
                 <Text style={[styles.header, { color: theme.text }]}>MovieGoer</Text>
-                <Text style={[styles.subHeader, { color: theme.subText }]}>探索您喜愛的電影與影院</Text>
+                <Text style={[styles.subHeader, { color: theme.subText }]}>探索台灣院線即時場次</Text>
+                
                 <View style={styles.section}>
                     <Text style={[styles.label, { color: theme.text }]}>🎬 選擇電影</Text>
                     <Dropdown
@@ -101,6 +112,7 @@ export default function MovieSelectScreen() {
                         selectedTextStyle={[styles.selectedTextStyle, { color: theme.text }]}
                         data={movies}
                         search
+                        searchPlaceholder="搜尋電影名稱..."
                         labelField="label"
                         valueField="value"
                         placeholder="請選擇一部電影"
@@ -110,6 +122,7 @@ export default function MovieSelectScreen() {
                         containerStyle={{ backgroundColor: theme.card }}
                     />
                 </View>
+
                 <View style={styles.section}>
                     <Text style={[styles.label, { color: theme.text }]}>🎥 觀影版本</Text>
                     <Dropdown
@@ -126,6 +139,7 @@ export default function MovieSelectScreen() {
                         containerStyle={{ backgroundColor: theme.card }}
                     />
                 </View>
+
                 <TouchableOpacity
                     style={[styles.submitButton, { backgroundColor: selectedMovie ? theme.primary : '#ccc' }]}
                     disabled={!selectedMovie}

@@ -24,9 +24,9 @@ type TicketType = '全票' | '學生票' | '愛心票';
 export default function CinemaScreen() {
   const params = useLocalSearchParams();
   
-  // 🚩 修正接收邏輯：優先從 movieTitle 抓取，若無則嘗試解析 movie 物件
-  const movieTitle = params.movieTitle as string || (params.movie ? JSON.parse(params.movie as string).title : "");
-  const version = (params.version as VersionKey) || '2D';
+  // 取得參數
+  const movieTitle = params.movieTitle as string || "";
+  const versionParam = (params.version as string) || '2D';
 
   const [fontsLoaded] = useFonts({
     ZenKurenaido: ZenKurenaido_400Regular,
@@ -53,7 +53,7 @@ export default function CinemaScreen() {
 
   useEffect(() => {
     prepareData();
-  }, [movieTitle]); // 當標題變更時重新抓取
+  }, [movieTitle, versionParam]);
 
   const prepareData = async () => {
     await getLocation();
@@ -72,15 +72,18 @@ export default function CinemaScreen() {
   };
 
   const fetchCinemas = async () => {
-    console.log(`🔥 開始抓取資料，搜尋目標：[${movieTitle}]`);
+    // 🚩 映射邏輯：前端的 '2D' 映射到爬蟲端的 '數位'
+    const searchVersion = versionParam === '2D' ? '數位' : versionParam;
+    
+    console.log(`🔥 開始抓取資料，搜尋目標：[${movieTitle}]，版本：[${searchVersion}]`);
+    
     if (!movieTitle) {
-      console.warn("⚠️ 警告：沒有接收到電影標題參數！");
       setLoading(false);
       return;
     }
 
     try {
-      // 1. 抓取戲院基本資訊 (包含經緯度)
+      // 1. 抓取戲院座標等基本資訊
       const qCinema = query(collection(db, 'cinemas'));
       const cinemaSnap = await getDocs(qCinema);
       const cinemaInfoMap = cinemaSnap.docs.reduce((acc, doc) => {
@@ -88,33 +91,37 @@ export default function CinemaScreen() {
         return acc;
       }, {} as any);
 
-      // 2. 抓取爬蟲存入的即時場次 (realtime_showtimes)
+      // 2. 抓取爬蟲存入的即時場次
       const qShowtimes = query(collection(db, 'realtime_showtimes'));
       const showtimeSnap = await getDocs(qShowtimes);
       
-      const searchTitleClean = movieTitle.replace(/\s/g, '').toLowerCase();
+      const combinedData = showtimeSnap.docs.map(doc => {
+        const showData = doc.data();
+        const cinemaBase = cinemaInfoMap[doc.id] || {};
+        
+        // 🚩 尋找匹配的電影
+        const movieInCinema = showData.movies?.find((m: any) => {
+          if (!m?.title) return false;
+          const cleanCrawlTitle = m.title.replace(/\s/g, '').toLowerCase();
+          const cleanTargetTitle = movieTitle.replace(/\s/g, '').toLowerCase();
+          return cleanCrawlTitle.includes(cleanTargetTitle) || cleanTargetTitle.includes(cleanCrawlTitle);
+        });
 
-const combinedData = showtimeSnap.docs.map(doc => {
-    const showData = doc.data();
-    const cinemaBase = cinemaInfoMap[doc.id] || {};
-    
-    const currentMovieData = showData.movies?.find((m: any) => {
-      if (!m?.title || !movieTitle) return false;
+        // 🚩 核心修正：從新的 showtimes 結構過濾符合版本的場次
+        let filteredTimes: string[] = [];
+        if (movieInCinema && movieInCinema.showtimes) {
+          filteredTimes = movieInCinema.showtimes
+            .filter((s: any) => s.ver.includes(searchVersion))
+            .map((s: any) => s.time);
+        }
 
-      // 🚩 進階清洗：移除括號內的文字 (例如移除 (3D 數位 英) 和 (普遍級))
-      const cleanCrawlTitle = m.title.replace(/\s/g, '').replace(/\([^)]*\)/g, '').toLowerCase();
-      const cleanTargetTitle = movieTitle.replace(/\s/g, '').replace(/\([^)]*\)/g, '').toLowerCase();
-
-      return cleanCrawlTitle.includes(cleanTargetTitle) || cleanTargetTitle.includes(cleanCrawlTitle);
-    });
-
-    return {
-      id: doc.id,
-      ...cinemaBase,
-      name: showData.cinemaName || cinemaBase.name || "未知影城",
-      currentShowtimes: currentMovieData ? currentMovieData.times : [],
-    };
-  }).filter(c => c.currentShowtimes.length > 0);
+        return {
+          id: doc.id,
+          ...cinemaBase,
+          name: showData.cinemaName || cinemaBase.name || "未知影城",
+          currentShowtimes: filteredTimes,
+        };
+      }).filter(c => c.currentShowtimes.length > 0);
 
       console.log(`✅ 匹配成功，共 ${combinedData.length} 間戲院有場次`);
       setCinemas(combinedData);
@@ -135,7 +142,7 @@ const combinedData = showtimeSnap.docs.map(doc => {
   };
 
   const getPrice = (base: number) => {
-    const b = base || 290; // 預設票價
+    const b = base || 290;
     if (ticketType === '學生票') return b - 20;
     if (ticketType === '愛心票') return Math.floor(b / 2);
     return b;
@@ -163,7 +170,7 @@ const combinedData = showtimeSnap.docs.map(doc => {
       
       <View style={[styles.headerCard, { backgroundColor: theme.card }]}>
         <Text style={[styles.title, { color: theme.text }]}>🎬 {movieTitle}</Text>
-        <Text style={[styles.subtitle, { color: theme.primary }]}>{version} 版本 ｜ 附近戲院</Text>
+        <Text style={[styles.subtitle, { color: theme.primary }]}>{versionParam} 版本 ｜ 附近戲院</Text>
       </View>
 
       <View style={styles.tabRow}>
@@ -206,7 +213,7 @@ const combinedData = showtimeSnap.docs.map(doc => {
                 </Text>
               </View>
               <Text style={styles.priceText}>
-                ${getPrice(item.prices?.[version])}
+                ${getPrice(item.prices?.[versionParam as VersionKey])}
               </Text>
             </View>
           </TouchableOpacity>
@@ -221,8 +228,9 @@ const combinedData = showtimeSnap.docs.map(doc => {
             <Text style={[styles.modalTitle, { color: theme.text }]}>{selectedCinema?.name}</Text>
             
             <View style={styles.sessionGrid}>
-              {selectedCinema?.currentShowtimes?.map((time: string) => (
-                <TouchableOpacity key={time} style={[styles.sessionBtn, { borderColor: theme.primary }]}>
+              {selectedCinema?.currentShowtimes?.map((time: string, index: number) => (
+                // 💡 修正點：將 key 改為 time + index，確保唯一性
+                <TouchableOpacity key={`${time}-${index}`} style={[styles.sessionBtn, { borderColor: theme.primary }]}>
                   <Text style={[styles.sessionText, { color: theme.primary }]}>{time}</Text>
                 </TouchableOpacity>
               ))}
@@ -238,6 +246,7 @@ const combinedData = showtimeSnap.docs.map(doc => {
   );
 }
 
+// Styles 不變，維持原樣...
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },

@@ -81,13 +81,16 @@ export default function MovieSelectScreen() {
         }
     };
 
-    const handleNext = () => {
-        if (!selectedMovie) return;
-        navigation.navigate('CinemaDetail', {
-            movie: JSON.stringify(selectedMovie.data),
-            version: selectedVersion,
-        });
-    };
+const handleNext = () => {
+    if (!selectedMovie) return;
+    
+    // 🚩 這裡的路徑必須對應你的檔案名稱，如果是 app/(tabs)/CinemaScreen.tsx
+    // 通常在 Expo Router 中建議使用 router.push
+    navigation.navigate('CinemaScreen' as any, {
+        movieTitle: selectedMovie.label, 
+        version: selectedVersion,
+    });
+};
 
     if (!fontsLoaded || loading) {
         return (

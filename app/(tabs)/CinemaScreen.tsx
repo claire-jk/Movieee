@@ -16,17 +16,18 @@ import {
 
 // --- 引入 Firebase ---
 import { collection, getDocs, query } from 'firebase/firestore';
-import { db } from './firebaseConfig'; // 確保路徑跳兩層回到根目錄
+import { db } from './firebaseConfig';
 
 type VersionKey = '2D' | '3D' | 'IMAX' | '4DX';
 type TicketType = '全票' | '學生票' | '愛心票';
 
 export default function CinemaScreen() {
   const params = useLocalSearchParams();
-  const movie = params.movie ? JSON.parse(params.movie as string) : null;
+  
+  // 🚩 修正接收邏輯：優先從 movieTitle 抓取，若無則嘗試解析 movie 物件
+  const movieTitle = params.movieTitle as string || (params.movie ? JSON.parse(params.movie as string).title : "");
   const version = (params.version as VersionKey) || '2D';
 
-  // 🎨 使用 Google Fonts 套件 (不再需要 require ttf 檔案)
   const [fontsLoaded] = useFonts({
     ZenKurenaido: ZenKurenaido_400Regular,
   });
@@ -52,7 +53,7 @@ export default function CinemaScreen() {
 
   useEffect(() => {
     prepareData();
-  }, []);
+  }, [movieTitle]); // 當標題變更時重新抓取
 
   const prepareData = async () => {
     await getLocation();
@@ -60,37 +61,70 @@ export default function CinemaScreen() {
   };
 
   const getLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') return;
-    let loc = await Location.getCurrentPositionAsync({});
-    setLocation(loc.coords);
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation(loc.coords);
+    } catch (e) {
+      console.warn("無法取得位置資訊");
+    }
   };
 
-    const fetchCinemas = async () => {
-    console.log("🔥 開始抓取資料...");
-    try {
-        const q = query(collection(db, 'cinemas'));
-        const querySnapshot = await getDocs(q);
-        
-        console.log("📊 抓到的文檔數量:", querySnapshot.size);
-        
-        if (querySnapshot.empty) {
-        console.warn("⚠️ Firebase 中 'cinemas' 集合是空的！");
-        }
-
-        const data = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-        }));
-        
-        console.log("✅ 成功處理資料:", data.length, "筆");
-        setCinemas(data);
-    } catch (error) {
-        console.error("❌ Firebase 讀取失敗:", error);
-    } finally {
-        setLoading(false);
+  const fetchCinemas = async () => {
+    console.log(`🔥 開始抓取資料，搜尋目標：[${movieTitle}]`);
+    if (!movieTitle) {
+      console.warn("⚠️ 警告：沒有接收到電影標題參數！");
+      setLoading(false);
+      return;
     }
+
+    try {
+      // 1. 抓取戲院基本資訊 (包含經緯度)
+      const qCinema = query(collection(db, 'cinemas'));
+      const cinemaSnap = await getDocs(qCinema);
+      const cinemaInfoMap = cinemaSnap.docs.reduce((acc, doc) => {
+        acc[doc.id] = doc.data();
+        return acc;
+      }, {} as any);
+
+      // 2. 抓取爬蟲存入的即時場次 (realtime_showtimes)
+      const qShowtimes = query(collection(db, 'realtime_showtimes'));
+      const showtimeSnap = await getDocs(qShowtimes);
+      
+      const searchTitleClean = movieTitle.replace(/\s/g, '').toLowerCase();
+
+const combinedData = showtimeSnap.docs.map(doc => {
+    const showData = doc.data();
+    const cinemaBase = cinemaInfoMap[doc.id] || {};
+    
+    const currentMovieData = showData.movies?.find((m: any) => {
+      if (!m?.title || !movieTitle) return false;
+
+      // 🚩 進階清洗：移除括號內的文字 (例如移除 (3D 數位 英) 和 (普遍級))
+      const cleanCrawlTitle = m.title.replace(/\s/g, '').replace(/\([^)]*\)/g, '').toLowerCase();
+      const cleanTargetTitle = movieTitle.replace(/\s/g, '').replace(/\([^)]*\)/g, '').toLowerCase();
+
+      return cleanCrawlTitle.includes(cleanTargetTitle) || cleanTargetTitle.includes(cleanCrawlTitle);
+    });
+
+    return {
+      id: doc.id,
+      ...cinemaBase,
+      name: showData.cinemaName || cinemaBase.name || "未知影城",
+      currentShowtimes: currentMovieData ? currentMovieData.times : [],
     };
+  }).filter(c => c.currentShowtimes.length > 0);
+
+      console.log(`✅ 匹配成功，共 ${combinedData.length} 間戲院有場次`);
+      setCinemas(combinedData);
+
+    } catch (error) {
+      console.error("❌ Firebase 讀取失敗:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -101,9 +135,9 @@ export default function CinemaScreen() {
   };
 
   const getPrice = (base: number) => {
-    const b = base || 280;
-    if (ticketType === '學生票') return b - 40;
-    if (ticketType === '愛心票') return b - 80;
+    const b = base || 290; // 預設票價
+    if (ticketType === '學生票') return b - 20;
+    if (ticketType === '愛心票') return Math.floor(b / 2);
     return b;
   };
 
@@ -114,11 +148,11 @@ export default function CinemaScreen() {
     }))
     .sort((a, b) => a.distance - b.distance);
 
-  // 確保字體載入中顯示 Loading
   if (!fontsLoaded || loading) {
     return (
       <View style={[styles.center, { backgroundColor: theme.bg }]}>
         <ActivityIndicator size="large" color={theme.primary} />
+        <Text style={{ marginTop: 10, color: theme.subText, fontFamily: 'ZenKurenaido' }}>讀取時刻表中...</Text>
       </View>
     );
   }
@@ -128,8 +162,8 @@ export default function CinemaScreen() {
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
       <View style={[styles.headerCard, { backgroundColor: theme.card }]}>
-        <Text style={[styles.title, { color: theme.text }]}>🎬 {movie?.title}</Text>
-        <Text style={[styles.subtitle, { color: theme.primary }]}>{version} 版本 ｜ 全台戲院</Text>
+        <Text style={[styles.title, { color: theme.text }]}>🎬 {movieTitle}</Text>
+        <Text style={[styles.subtitle, { color: theme.primary }]}>{version} 版本 ｜ 附近戲院</Text>
       </View>
 
       <View style={styles.tabRow}>
@@ -148,6 +182,13 @@ export default function CinemaScreen() {
         data={sortedCinemas}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.center}>
+            <Text style={{ color: theme.subText, fontFamily: 'ZenKurenaido', marginTop: 50 }}>
+              目前選取的地區暫無此電影場次
+            </Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <TouchableOpacity
             activeOpacity={0.8}
@@ -161,7 +202,7 @@ export default function CinemaScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={[styles.cinemaName, { color: theme.text }]}>{item.name}</Text>
                 <Text style={[styles.info, { color: theme.subText }]}>
-                  📍 {item.city} ｜ {item.distance < 900 ? `${item.distance.toFixed(1)} km` : '定位中'}
+                  📍 {item.city} ｜ {item.distance < 500 ? `${item.distance.toFixed(1)} km` : '計算中'}
                 </Text>
               </View>
               <Text style={styles.priceText}>
@@ -180,15 +221,15 @@ export default function CinemaScreen() {
             <Text style={[styles.modalTitle, { color: theme.text }]}>{selectedCinema?.name}</Text>
             
             <View style={styles.sessionGrid}>
-              {selectedCinema?.showtimes?.map((time: string) => (
+              {selectedCinema?.currentShowtimes?.map((time: string) => (
                 <TouchableOpacity key={time} style={[styles.sessionBtn, { borderColor: theme.primary }]}>
                   <Text style={[styles.sessionText, { color: theme.primary }]}>{time}</Text>
                 </TouchableOpacity>
-              )) || <Text style={{color: theme.subText, fontFamily: 'ZenKurenaido'}}>暫無今日場次</Text>}
+              ))}
             </View>
 
             <TouchableOpacity style={[styles.closeBtn, { backgroundColor: isDark ? '#333' : '#F0F0F0' }]} onPress={() => setModalVisible(false)}>
-              <Text style={[styles.closeText, { color: isDark ? '#fff' : '#000' }]}>關閉</Text>
+              <Text style={[styles.closeText, { color: isDark ? '#fff' : '#000' }]}>返回</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -201,8 +242,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   headerCard: { padding: 20, borderRadius: 20, marginBottom: 20, elevation: 2 },
-  title: { fontSize: 22, fontFamily: 'ZenKurenaido', marginBottom: 5 },
-  subtitle: { fontSize: 16, fontFamily: 'ZenKurenaido', fontWeight: 'bold' },
+  title: { fontSize: 20, fontFamily: 'ZenKurenaido', marginBottom: 5 },
+  subtitle: { fontSize: 14, fontFamily: 'ZenKurenaido', fontWeight: 'bold' },
   tabRow: { flexDirection: 'row', marginBottom: 20, gap: 10 },
   tag: { flex: 1, paddingVertical: 10, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
   tagText: { fontFamily: 'ZenKurenaido', fontSize: 14 },
@@ -214,11 +255,10 @@ const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContent: { padding: 25, borderTopLeftRadius: 30, borderTopRightRadius: 30, minHeight: 350 },
   modalHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 15 },
-  modalTitle: { fontSize: 22, fontFamily: 'ZenKurenaido', textAlign: 'center', marginBottom: 20 },
+  modalTitle: { fontSize: 20, fontFamily: 'ZenKurenaido', textAlign: 'center', marginBottom: 20 },
   sessionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
   sessionBtn: { width: '28%', paddingVertical: 12, borderRadius: 10, borderWidth: 1, alignItems: 'center', marginBottom: 10 },
   sessionText: { fontSize: 16, fontWeight: 'bold' },
   closeBtn: { marginTop: 25, padding: 16, borderRadius: 15, alignItems: 'center' },
   closeText: { fontSize: 16, fontFamily: 'ZenKurenaido' },
 });
-

@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "crawler": "node crawlervisual.js"
   },
   "dependencies": {
     "@expo-google-fonts/zen-kurenaido": "^0.4.1",

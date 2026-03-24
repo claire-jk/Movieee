@@ -1,11 +1,15 @@
 import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   Modal,
+  RefreshControl,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -14,23 +18,23 @@ import {
   View,
 } from 'react-native';
 
-// --- 引入 Firebase ---
+// --- Firebase ---
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from './firebaseConfig';
+
+const { width, height } = Dimensions.get('window');
 
 type VersionKey = '2D' | '3D' | 'IMAX' | '4DX';
 type TicketType = '全票' | '學生票' | '愛心票';
 
 export default function CinemaScreen() {
   const params = useLocalSearchParams();
+  const router = useRouter();
   
-  // 取得參數
   const movieTitle = params.movieTitle as string || "";
   const versionParam = (params.version as string) || '2D';
 
-  const [fontsLoaded] = useFonts({
-    ZenKurenaido: ZenKurenaido_400Regular,
-  });
+  const [fontsLoaded] = useFonts({ ZenKurenaido: ZenKurenaido_400Regular });
 
   const [cinemas, setCinemas] = useState<any[]>([]);
   const [location, setLocation] = useState<any>(null);
@@ -38,17 +42,20 @@ export default function CinemaScreen() {
   const [selectedCinema, setSelectedCinema] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   const theme = {
-    bg: isDark ? '#121212' : '#F5F5F7',
-    card: isDark ? '#1E1E1E' : '#FFFFFF',
-    text: isDark ? '#FFFFFF' : '#1D1D1F',
-    subText: isDark ? '#AAAAAA' : '#86868B',
-    primary: '#FF4081',
-    border: isDark ? '#333333' : '#E5E5E5',
+    bg: isDark ? '#0A0A0B' : '#F0F2F5',
+    card: isDark ? '#1A1A1C' : '#FFFFFF',
+    text: isDark ? '#FFFFFF' : '#1C1C1E',
+    subText: isDark ? '#A0A0A5' : '#636366',
+    primary: isDark ? '#D0BCFF' : '#6750A4', // 柔和的發光色
+    border: isDark ? '#333335' : '#E5E5EA',
+    accent: '#FF2D55',
+    glow: isDark ? 'rgba(208, 188, 255, 0.3)' : 'rgba(103, 80, 164, 0.15)', // 發光陰影色
   };
 
   useEffect(() => {
@@ -56,9 +63,17 @@ export default function CinemaScreen() {
   }, [movieTitle, versionParam]);
 
   const prepareData = async () => {
+    setLoading(true);
     await getLocation();
     await fetchCinemas();
+    setLoading(false);
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchCinemas();
+    setRefreshing(false);
+  }, [movieTitle, versionParam]);
 
   const getLocation = async () => {
     try {
@@ -72,18 +87,10 @@ export default function CinemaScreen() {
   };
 
   const fetchCinemas = async () => {
-    // 🚩 映射邏輯：前端的 '2D' 映射到爬蟲端的 '數位'
     const searchVersion = versionParam === '2D' ? '數位' : versionParam;
-    
-    console.log(`🔥 開始抓取資料，搜尋目標：[${movieTitle}]，版本：[${searchVersion}]`);
-    
-    if (!movieTitle) {
-      setLoading(false);
-      return;
-    }
+    if (!movieTitle) return;
 
     try {
-      // 1. 抓取戲院座標等基本資訊
       const qCinema = query(collection(db, 'cinemas'));
       const cinemaSnap = await getDocs(qCinema);
       const cinemaInfoMap = cinemaSnap.docs.reduce((acc, doc) => {
@@ -91,15 +98,12 @@ export default function CinemaScreen() {
         return acc;
       }, {} as any);
 
-      // 2. 抓取爬蟲存入的即時場次
       const qShowtimes = query(collection(db, 'realtime_showtimes'));
       const showtimeSnap = await getDocs(qShowtimes);
       
       const combinedData = showtimeSnap.docs.map(doc => {
         const showData = doc.data();
         const cinemaBase = cinemaInfoMap[doc.id] || {};
-        
-        // 🚩 尋找匹配的電影
         const movieInCinema = showData.movies?.find((m: any) => {
           if (!m?.title) return false;
           const cleanCrawlTitle = m.title.replace(/\s/g, '').toLowerCase();
@@ -107,7 +111,6 @@ export default function CinemaScreen() {
           return cleanCrawlTitle.includes(cleanTargetTitle) || cleanTargetTitle.includes(cleanCrawlTitle);
         });
 
-        // 🚩 核心修正：從新的 showtimes 結構過濾符合版本的場次
         let filteredTimes: string[] = [];
         if (movieInCinema && movieInCinema.showtimes) {
           filteredTimes = movieInCinema.showtimes
@@ -123,13 +126,9 @@ export default function CinemaScreen() {
         };
       }).filter(c => c.currentShowtimes.length > 0);
 
-      console.log(`✅ 匹配成功，共 ${combinedData.length} 間戲院有場次`);
       setCinemas(combinedData);
-
     } catch (error) {
       console.error("❌ Firebase 讀取失敗:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -155,11 +154,44 @@ export default function CinemaScreen() {
     }))
     .sort((a, b) => a.distance - b.distance);
 
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <View style={[styles.headerCard, { backgroundColor: theme.card, borderColor: theme.border, shadowColor: theme.glow }]}>
+        <Text style={[styles.title, { color: theme.text }]}>🎬 {movieTitle}</Text>
+        <View style={styles.badgeRow}>
+          <View style={[styles.versionBadge, { backgroundColor: theme.primary + '30' }]}>
+            <Text style={[styles.versionText, { color: theme.primary }]}>{versionParam}</Text>
+          </View>
+          <Text style={[styles.subtitle, { color: theme.subText }]}> 附近共有 {cinemas.length} 間戲院</Text>
+        </View>
+      </View>
+
+      <View style={styles.tabRow}>
+        {(['全票', '學生票', '愛心票'] as TicketType[]).map((t) => (
+          <TouchableOpacity
+            key={t}
+            activeOpacity={0.7}
+            style={[
+              styles.tag, 
+              { backgroundColor: theme.card, borderColor: theme.border },
+              ticketType === t && { backgroundColor: theme.primary, borderColor: theme.primary, shadowColor: theme.primary }
+            ]}
+            onPress={() => setTicketType(t)}
+          >
+            <Text style={[styles.tagText, { color: ticketType === t ? (isDark ? '#000' : '#fff') : theme.text }]}>{t}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      
+      <Text style={[styles.sectionTitle, { color: theme.subText }]}>附近的戲院 ｜ 距離排序</Text>
+    </View>
+  );
+
   if (!fontsLoaded || loading) {
     return (
       <View style={[styles.center, { backgroundColor: theme.bg }]}>
         <ActivityIndicator size="large" color={theme.primary} />
-        <Text style={{ marginTop: 10, color: theme.subText, fontFamily: 'ZenKurenaido' }}>讀取時刻表中...</Text>
+        <Text style={{ marginTop: 15, color: theme.subText, fontFamily: 'ZenKurenaido' }}>探測中...</Text>
       </View>
     );
   }
@@ -168,38 +200,27 @@ export default function CinemaScreen() {
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
-      <View style={[styles.headerCard, { backgroundColor: theme.card }]}>
-        <Text style={[styles.title, { color: theme.text }]}>🎬 {movieTitle}</Text>
-        <Text style={[styles.subtitle, { color: theme.primary }]}>{versionParam} 版本 ｜ 附近戲院</Text>
-      </View>
-
-      <View style={styles.tabRow}>
-        {(['全票', '學生票', '愛心票'] as TicketType[]).map((t) => (
-          <TouchableOpacity
-            key={t}
-            style={[styles.tag, { borderColor: theme.border }, ticketType === t && { backgroundColor: theme.primary, borderColor: theme.primary }]}
-            onPress={() => setTicketType(t)}
-          >
-            <Text style={[styles.tagText, { color: ticketType === t ? '#fff' : theme.text }]}>{t}</Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.navBar}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={28} color={theme.text} />
+        </TouchableOpacity>
+        <Text style={[styles.navTitle, { color: theme.text }]}>選擇戲院</Text>
+        <View style={{ width: 44 }} />
       </View>
 
       <FlatList
         data={sortedCinemas}
         keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.center}>
-            <Text style={{ color: theme.subText, fontFamily: 'ZenKurenaido', marginTop: 50 }}>
-              目前選取的地區暫無此電影場次
-            </Text>
-          </View>
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />
         }
         renderItem={({ item }) => (
           <TouchableOpacity
-            activeOpacity={0.8}
-            style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}
+            activeOpacity={0.85}
+            style={[styles.cinemaCard, { backgroundColor: theme.card, borderColor: theme.border, shadowColor: theme.glow }]}
             onPress={() => {
               setSelectedCinema(item);
               setModalVisible(true);
@@ -208,36 +229,58 @@ export default function CinemaScreen() {
             <View style={styles.cardMain}>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.cinemaName, { color: theme.text }]}>{item.name}</Text>
-                <Text style={[styles.info, { color: theme.subText }]}>
-                  📍 {item.city} ｜ {item.distance < 500 ? `${item.distance.toFixed(1)} km` : '計算中'}
+                <View style={styles.infoRow}>
+                  <Ionicons name="navigate-outline" size={14} color={theme.primary} />
+                  <Text style={[styles.info, { color: theme.subText }]}>
+                    {item.city} ｜ {item.distance < 500 ? `${item.distance.toFixed(1)} km` : '計算中'}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.priceTag}>
+                <Text style={[styles.priceValue, { color: theme.primary }]}>
+                  <Text style={styles.currency}>$</Text>{getPrice(item.prices?.[versionParam as VersionKey])}
                 </Text>
               </View>
-              <Text style={styles.priceText}>
-                ${getPrice(item.prices?.[versionParam as VersionKey])}
-              </Text>
             </View>
           </TouchableOpacity>
         )}
       />
 
+      {/* --- 時刻表 Modal (含捲動功能) --- */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <TouchableOpacity style={{flex: 1}} onPress={() => setModalVisible(false)} />
           <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
             <View style={[styles.modalHandle, { backgroundColor: theme.border }]} />
-            <Text style={[styles.modalTitle, { color: theme.text }]}>{selectedCinema?.name}</Text>
             
-            <View style={styles.sessionGrid}>
-              {selectedCinema?.currentShowtimes?.map((time: string, index: number) => (
-                // 💡 修正點：將 key 改為 time + index，確保唯一性
-                <TouchableOpacity key={`${time}-${index}`} style={[styles.sessionBtn, { borderColor: theme.primary }]}>
-                  <Text style={[styles.sessionText, { color: theme.primary }]}>{time}</Text>
-                </TouchableOpacity>
-              ))}
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>{selectedCinema?.name}</Text>
+              <Text style={[styles.modalSubtitle, { color: theme.subText }]}>今日放映時刻表</Text>
             </View>
+            
+            {/* 💡 這裡是關鍵：將場次放在 ScrollView 裡 */}
+            <ScrollView 
+              showsVerticalScrollIndicator={false} 
+              style={styles.modalScrollView}
+              contentContainerStyle={styles.modalScrollPadding}
+            >
+              <View style={styles.sessionGrid}>
+                {selectedCinema?.currentShowtimes?.map((time: string, index: number) => (
+                  <TouchableOpacity 
+                    key={`${time}-${index}`} 
+                    style={[styles.sessionBtn, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}
+                  >
+                    <Text style={[styles.sessionText, { color: theme.primary }]}>{time}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
 
-            <TouchableOpacity style={[styles.closeBtn, { backgroundColor: isDark ? '#333' : '#F0F0F0' }]} onPress={() => setModalVisible(false)}>
-              <Text style={[styles.closeText, { color: isDark ? '#fff' : '#000' }]}>返回</Text>
+            <TouchableOpacity 
+              style={[styles.closeBtn, { backgroundColor: isDark ? '#2C2C2E' : '#F2F2F7' }]} 
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={[styles.closeText, { color: theme.text }]}>返回列表</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -246,28 +289,100 @@ export default function CinemaScreen() {
   );
 }
 
-// Styles 不變，維持原樣...
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
+  container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerCard: { padding: 20, borderRadius: 20, marginBottom: 20, elevation: 2 },
-  title: { fontSize: 20, fontFamily: 'ZenKurenaido', marginBottom: 5 },
-  subtitle: { fontSize: 14, fontFamily: 'ZenKurenaido', fontWeight: 'bold' },
-  tabRow: { flexDirection: 'row', marginBottom: 20, gap: 10 },
-  tag: { flex: 1, paddingVertical: 10, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
-  tagText: { fontFamily: 'ZenKurenaido', fontSize: 14 },
-  card: { padding: 20, borderRadius: 18, marginBottom: 15, borderWidth: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
+  headerContainer: { paddingTop: 10 },
+  
+  navBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 50,
+    paddingBottom: 10,
+    paddingHorizontal: 15,
+  },
+  backButton: { padding: 8 },
+  navTitle: { fontSize: 18, fontFamily: 'ZenKurenaido' },
+
+  headerCard: {
+    padding: 24,
+    borderRadius: 28,
+    marginBottom: 20,
+    borderWidth: 1,
+    elevation: 8,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+  },
+  title: { fontSize: 26, fontFamily: 'ZenKurenaido', marginBottom: 12 },
+  badgeRow: { flexDirection: 'row', alignItems: 'center' },
+  versionBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 10, marginRight: 8 },
+  versionText: { fontSize: 13 },
+  subtitle: { fontSize: 14, fontFamily: 'ZenKurenaido' },
+  sectionTitle: { fontSize: 13, fontFamily: 'ZenKurenaido', marginBottom: 15, marginLeft: 5, letterSpacing: 1, opacity: 0.8 },
+
+  tabRow: { flexDirection: 'row', marginBottom: 25, gap: 10 },
+  tag: { 
+    flex: 1, 
+    paddingVertical: 12, 
+    borderRadius: 18, 
+    borderWidth: 1, 
+    alignItems: 'center',
+    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  tagText: { fontFamily: 'ZenKurenaido', fontSize: 15 },
+
+  cinemaCard: {
+    padding: 22,
+    borderRadius: 24,
+    marginBottom: 16,
+    borderWidth: 1,
+    elevation: 6,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+  },
   cardMain: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cinemaName: { fontSize: 18, fontFamily: 'ZenKurenaido', marginBottom: 4 },
-  info: { fontSize: 13, fontFamily: 'ZenKurenaido' },
-  priceText: { fontSize: 20, color: '#FF4081', fontWeight: 'bold' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { padding: 25, borderTopLeftRadius: 30, borderTopRightRadius: 30, minHeight: 350 },
-  modalHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 15 },
-  modalTitle: { fontSize: 20, fontFamily: 'ZenKurenaido', textAlign: 'center', marginBottom: 20 },
-  sessionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
-  sessionBtn: { width: '28%', paddingVertical: 12, borderRadius: 10, borderWidth: 1, alignItems: 'center', marginBottom: 10 },
-  sessionText: { fontSize: 16, fontWeight: 'bold' },
-  closeBtn: { marginTop: 25, padding: 16, borderRadius: 15, alignItems: 'center' },
-  closeText: { fontSize: 16, fontFamily: 'ZenKurenaido' },
+  cinemaName: { fontSize: 20, fontFamily: 'ZenKurenaido', marginBottom: 8},
+  infoRow: { flexDirection: 'row', alignItems: 'center' },
+  info: { fontSize: 13, fontFamily: 'ZenKurenaido', marginLeft: 6 },
+  priceTag: { alignItems: 'flex-end' },
+  currency: { fontSize: 16, marginRight: 2 },
+  priceValue: { fontSize: 28, fontWeight: '900' },
+
+  // Modal 樣式優化
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
+  modalContent: { 
+    padding: 25, 
+    borderTopLeftRadius: 40, 
+    borderTopRightRadius: 40, 
+    maxHeight: height * 0.75, // 限制高度以啟用內部滾動
+    minHeight: 450,
+  },
+  modalHandle: { width: 45, height: 5, borderRadius: 10, alignSelf: 'center', marginBottom: 20, opacity: 0.4 },
+  modalHeader: { marginBottom: 20, alignItems: 'center' },
+  modalTitle: { fontSize: 24, fontFamily: 'ZenKurenaido',  marginBottom: 6 },
+  modalSubtitle: { fontSize: 15, fontFamily: 'ZenKurenaido', letterSpacing: 1 },
+  
+  // 💡 時刻表滾動區域
+  modalScrollView: { marginVertical: 10 },
+  modalScrollPadding: { paddingBottom: 20 },
+  
+  sessionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'flex-start' },
+  sessionBtn: { 
+    width: (width - 76) / 3, 
+    paddingVertical: 18, 
+    borderRadius: 20, 
+    borderWidth: 1.5, 
+    alignItems: 'center',
+    elevation: 2,
+  },
+  sessionText: { fontSize: 18 },
+  closeBtn: { marginTop: 10, padding: 18, borderRadius: 22, alignItems: 'center' },
+  closeText: { fontSize: 16, fontFamily: 'ZenKurenaido'},
 });

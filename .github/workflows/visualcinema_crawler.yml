@@ -31,7 +31,7 @@ jobs:
           echo '${{ secrets.FIREBASE_CRAWLER_KEY }}' > serviceAccount.json
 
       - name: Run Crawler
-        run: npm start crawler
+        run: node crawlervisual.js
         env:
           NODE_ENV: production
 

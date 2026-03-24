@@ -47,20 +47,20 @@ const cinemas = [
  * 🧼 核心清洗函數：移除 (3D 數位 英) 與 (普遍級) 等雜質
  */
 function cleanMovieTitle(fullTitle) {
-    const versions = [];
-    if (/3D/i.test(fullTitle)) versions.push("3D");
-    if (/4DX/i.test(fullTitle)) versions.push("4DX");
-    if (/IMAX/i.test(fullTitle)) versions.push("IMAX");
-    if (/SCREENX/i.test(fullTitle)) versions.push("ScreenX");
+    let version = "數位"; // 預設版本
+    if (/4DX/i.test(fullTitle)) version = "4DX";
+    else if (/IMAX/i.test(fullTitle)) version = "IMAX";
+    else if (/3D/i.test(fullTitle)) version = "3D";
+    else if (/SCREENX/i.test(fullTitle)) version = "ScreenX";
+    else if (/LIVE/i.test(fullTitle)) version = "LIVE";
 
     let cleanTitle = fullTitle
-        .replace(/\(.*?\)/g, '')         // 💡 加了問號，變成「非貪婪」，只移除個別括號
-        .replace(/\.{2,}/g, '')         
-        .replace(/3D|4DX|IMAX|GOLD CLASS|SCREENX|數位|英|日|國|搶先場|特別場|LIVE|PRE|WEEK \d|普遍級|保護級|輔12級|輔15級|限制級|待定/gi, '') 
-        .replace(/\s+/g, ' ')           
+        .replace(/\(.*?\)/g, '') // 移除所有括號
+        .replace(/3D|4DX|IMAX|GOLD CLASS|SCREENX|數位|英|日|國|分級|普遍級|保護級|輔12級|輔15級|限制級|待定/gi, '')
+        .replace(/\s+/g, ' ')
         .trim();
 
-    return { cleanTitle, versions };
+    return { cleanTitle, version };
 }
 
 /**
@@ -69,17 +69,27 @@ function cleanMovieTitle(fullTitle) {
 function mergeMovieData(rawData) {
     const merged = [];
     rawData.forEach(item => {
-        const { cleanTitle, versions } = cleanMovieTitle(item.fullTitle || item.title);
-        const existing = merged.find(m => m.title === cleanTitle);
+        const { cleanTitle, version } = cleanMovieTitle(item.fullTitle || item.title);
         
+        // 將這批時間標註上版本
+        const newShowtimes = item.times.map(t => ({
+            time: t,
+            ver: version
+        }));
+
+        const existing = merged.find(m => m.title === cleanTitle);
         if (existing) {
-            existing.times = [...new Set([...existing.times, ...item.times])].sort();
-            existing.versions = [...new Set([...(existing.versions || []), ...versions])];
+            // 合併場次並排序
+            existing.showtimes = [...existing.showtimes, ...newShowtimes].sort((a, b) => a.time.localeCompare(b.time));
+            // 更新版本清單
+            if (!existing.versions.includes(version)) {
+                existing.versions.push(version);
+            }
         } else {
             merged.push({
                 title: cleanTitle,
-                times: [...new Set(item.times)].sort(),
-                versions: versions
+                versions: [version],
+                showtimes: newShowtimes
             });
         }
     });

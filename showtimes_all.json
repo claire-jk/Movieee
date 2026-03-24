@@ -1,0 +1,2301 @@
+[
+    {
+        "cinema": "台北欣欣秀泰影城",
+        "movies": [
+            {
+                "title": "狸想世界",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "00:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "極限返航",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "00:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "劇場版「暗殺教室」：我們的時光 10 週年紀念場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "16:25",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "冠軍之路 榮耀特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "16:25",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "Takanashi Kiara / Ninomae Ina’nis 1st Concert “Drawn to Dawn”: Live Viewing in Cinemas",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "驚聲尖叫 7",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "00:25",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "犯罪101",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "21:40",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "00:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "邪降：覺醒",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "00:30",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "台中文心秀泰影城",
+        "movies": [
+            {
+                "title": "狸想世界",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "極限返航",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "09:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "10:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "23:10",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "坂本龍一：OPUS 紀念場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "15:50",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "怪獸之王 哥吉拉經典影展 馬拉松場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "Takanashi Kiara / Ninomae Ina’nis 1st Concert “Drawn to Dawn”: Live Viewing in Cinemas",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "驚聲尖叫 7",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "犯罪101",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "12:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:10",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "怪獸大戰爭【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "哥吉拉vs碧奧蘭蒂【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機械哥吉拉的逆襲【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "72小時即刻救援",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "23:20",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "世外",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機動戰士鋼彈 閃光的哈薩威 喀耳刻的魔女",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "12:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "23:10",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "讓建築歌唱～徐亞的交響人生",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "14:50",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "大巨蛋秀泰影城",
+        "movies": [
+            {
+                "title": "極限返航",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "23:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "23:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "劇場版「暗殺教室」：我們的時光 10 週年紀念場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "15:10",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "再見了，可魯：經典重映 感動特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "劇場版「進擊的巨人」完結篇THE LAST ATTACK 艾連生場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "冠軍之路 榮耀特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "14:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "怪獸之王 哥吉拉經典影展 馬拉松場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "Takanashi Kiara / Ninomae Ina’nis 1st Concert “Drawn to Dawn”: Live Viewing in Cinemas",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "一戰再戰 重映",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "21:40",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "罪人 重映",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "21:40",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "怪獸大戰爭【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機械哥吉拉的逆襲【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "讓建築歌唱～徐亞的交響人生",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "樹林秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:50",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:55",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:45",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:35",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:30",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "土城秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "犯罪101",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "台中站前秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "09:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "09:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "劇場版「暗殺教室」：我們的時光 10 週年紀念場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "再見了，可魯：經典重映 感動特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "犯罪101",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "16:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "09:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:50",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機動戰士鋼彈 閃光的哈薩威 喀耳刻的魔女",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "台中麗寶秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "犯罪101",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "14:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:20",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "嘉義秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:55",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:35",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:15",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:05",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:15",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:50",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機動戰士鋼彈 閃光的哈薩威 喀耳刻的魔女",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "12:45",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:05",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "基隆秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:50",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:00",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "花蓮秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "21:10",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "台東秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:20",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:20",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "北港秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:25",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:15",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:10",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "台南仁德秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "高雄岡山秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "12:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "劇場版「暗殺教室」：我們的時光 10 週年紀念場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "再見了，可魯：經典重映 感動特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "16:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機動戰士鋼彈 閃光的哈薩威 喀耳刻的魔女",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "cinema": "高雄夢時代秀泰影城",
+        "movies": [
+            {
+                "title": "超級瑪利歐銀河電影版",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:50",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "13:10",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "15:20",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:40",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "19:40",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "劇場版「暗殺教室」：我們的時光 10 週年紀念場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "15:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "超級瑪利歐銀河電影版 鐵粉首首場特別場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "怪獸之王 哥吉拉經典影展 馬拉松場",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "安可重播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "17:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "現場直播 BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "13:45",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "Takanashi Kiara / Ninomae Ina’nis 1st Concert “Drawn to Dawn”: Live Viewing in Cinemas",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "11:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "怪獸大戰爭【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "哥吉拉vs碧奧蘭蒂【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機械哥吉拉的逆襲【哥吉拉經典影展】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "19:00",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "Stray Kids: The dominATE Experience 【應援場】",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:20",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "他們要殺你",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "12:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "14:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "16:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "18:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "20:30",
+                        "ver": "數位"
+                    },
+                    {
+                        "time": "22:30",
+                        "ver": "數位"
+                    }
+                ]
+            },
+            {
+                "title": "機動戰士鋼彈 閃光的哈薩威 喀耳刻的魔女",
+                "versions": [
+                    "數位"
+                ],
+                "showtimes": [
+                    {
+                        "time": "10:00",
+                        "ver": "數位"
+                    }
+                ]
+            }
+        ]
+    }
+]

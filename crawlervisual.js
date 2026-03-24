@@ -64,7 +64,7 @@ function parseShowtimes(html) {
 async function crawl() {
     console.log(`\n⏰ 啟動任務: ${new Date().toLocaleString()}`);
 
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch({ headless: process.env.NODE_ENV === 'production' ? true : false });
     const context = await browser.newContext({
         viewport: { width: 1280, height: 800 },
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'

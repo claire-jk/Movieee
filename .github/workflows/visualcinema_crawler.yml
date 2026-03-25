@@ -39,6 +39,11 @@ jobs:
         run: node crawlShowtimes_ST.js  # 這是你的新腳本檔案名稱
         env:
           NODE_ENV: production
+      
+      - name: Run Broadway Crawler (百老匯)
+        run: node broadway.js  # 這裡填入你剛剛建立的百老匯腳本檔名
+        env:
+          NODE_ENV: production
 
       # 錯誤監控：如果執行失敗，發送通知 (可選)
       - name: Check Status

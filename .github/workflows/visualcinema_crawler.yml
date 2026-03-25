@@ -41,7 +41,7 @@ jobs:
           NODE_ENV: production
       
       - name: Run Broadway Crawler (百老匯)
-        run: node broadway.js  # 這裡填入你剛剛建立的百老匯腳本檔名
+        run: node broadway_crawler.js  # 這裡填入你剛剛建立的百老匯腳本檔名
         env:
           NODE_ENV: production
 

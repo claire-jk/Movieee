@@ -3,31 +3,31 @@
     "date": "3/26",
     "movies": [
         {
-            "title": "超級瑪利歐銀河電影版_首日瘋特別場",
+            "title": "超級瑪利歐銀河電影版_瘋",
             "versions": [
-                "IMAX2D"
+                "IMAX"
             ],
             "showtimes": [
                 {
                     "time": "10:00",
-                    "ver": "IMAX2D"
+                    "ver": "IMAX"
                 }
             ]
         },
         {
-            "title": "極限返航_特別場5",
+            "title": "極限返航_5",
             "versions": [
-                "Dolby Cinema"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "20:40",
-                    "ver": "Dolby Cinema"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
-            "title": "極限返航_特別場6",
+            "title": "極限返航_6",
             "versions": [
                 "IMAX"
             ],
@@ -39,55 +39,55 @@
             ]
         },
         {
-            "title": "狸想世界_特別場3",
+            "title": "狸想世界_3",
             "versions": [
-                "Dolby Cinema"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "14:20",
-                    "ver": "Dolby Cinema"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
-            "title": "劇場版「進擊的巨人」完結篇THE LAST ATTACK_約翰生日特別場",
+            "title": "劇場版「進擊的巨人」完結篇THE LAST ATTACK_約翰生",
             "versions": [
-                "Dolby Cinema"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "19:00",
-                    "ver": "Dolby Cinema"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
-            "title": "狸想世界_特別場2",
+            "title": "狸想世界_2",
             "versions": [
-                "Dolby Cinema"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "17:50",
-                    "ver": "Dolby Cinema"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
-            "title": "極限返航_特別場3",
+            "title": "極限返航_3",
             "versions": [
-                "Dolby Cinema"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "19:40",
-                    "ver": "Dolby Cinema"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
-            "title": "極限返航_特別場4",
+            "title": "極限返航_4",
             "versions": [
                 "IMAX"
             ],
@@ -99,7 +99,7 @@
             ]
         },
         {
-            "title": "BTS WORLD TOUR ARIRANG IN GOYANG現場直播",
+            "title": "BTS WORLD TOUR ARIRANG IN GOYANG",
             "versions": [
                 "LIVE"
             ],
@@ -113,29 +113,17 @@
         {
             "title": "【怪獸之王 哥吉拉經典影展】馬拉松",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "10:00",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
-            "title": "BTS WORLD TOUR ARIRANG IN GOYANG安可重播",
-            "versions": [
-                "LIVE"
-            ],
-            "showtimes": [
-                {
-                    "time": "17:45",
-                    "ver": "LIVE"
-                }
-            ]
-        },
-        {
-            "title": "BTS WORLD TOUR ARIRANG IN JAPAN現場直播",
+            "title": "BTS WORLD TOUR ARIRANG IN JAPAN",
             "versions": [
                 "LIVE"
             ],
@@ -143,15 +131,7 @@
                 {
                     "time": "13:45",
                     "ver": "LIVE"
-                }
-            ]
-        },
-        {
-            "title": "BTS WORLD TOUR ARIRANG IN JAPAN安可重播",
-            "versions": [
-                "LIVE"
-            ],
-            "showtimes": [
+                },
                 {
                     "time": "17:30",
                     "ver": "LIVE"
@@ -159,382 +139,300 @@
             ]
         },
         {
-            "title": "土反本龍一：OPUS_紀念特別場",
+            "title": "土反本龍一：OPUS_紀念",
             "versions": [
-                "Dolby Cinema"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "20:00",
-                    "ver": "Dolby Cinema"
-                }
-            ]
-        },
-        {
-            "title": "1954_哥吉拉【哥吉拉經典影展】",
-            "versions": [
-                "標準廳"
-            ],
-            "showtimes": [
-                {
-                    "time": "12:10",
-                    "ver": "標準廳"
-                }
-            ]
-        },
-        {
-            "title": "1955_哥吉拉的逆襲【哥吉拉經典影展】",
-            "versions": [
-                "標準廳"
-            ],
-            "showtimes": [
-                {
-                    "time": "14:10",
-                    "ver": "標準廳"
-                }
-            ]
-        },
-        {
-            "title": "1964_摩斯拉對哥吉拉【哥吉拉經典影展】",
-            "versions": [
-                "標準廳"
-            ],
-            "showtimes": [
-                {
-                    "time": "15:50",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "1989_哥吉拉vs碧奧蘭蒂【哥吉拉經典影展】",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "12:10",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "2004_哥吉拉 最後戰役【哥吉拉經典影展】",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "16:20",
-                    "ver": "標準廳"
-                }
-            ]
-        },
-        {
-            "title": "1964_三大怪獸 地球最大決戰【哥吉拉經典影展】",
-            "versions": [
-                "標準廳"
-            ],
-            "showtimes": [
-                {
-                    "time": "17:40",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "1965_怪獸大戰爭【哥吉拉經典影展】",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "19:30",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "1968_怪獸總進擊【哥吉拉經典影展】",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "21:30",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "1975_機械哥吉拉的逆襲【哥吉拉經典影展】",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "23:20",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "1993_哥吉拉vs機械哥吉拉【哥吉拉經典影展】",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "14:10",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
+                }
+            ]
+        },
+        {
+            "title": "1954_哥吉拉【哥吉拉經典影展】",
+            "versions": [
+                "數位 2D"
+            ],
+            "showtimes": [
+                {
+                    "time": "18:50",
+                    "ver": "數位 2D"
+                }
+            ]
+        },
+        {
+            "title": "1955_哥吉拉的逆襲【哥吉拉經典影展】",
+            "versions": [
+                "數位 2D"
+            ],
+            "showtimes": [
+                {
+                    "time": "20:50",
+                    "ver": "數位 2D"
+                }
+            ]
+        },
+        {
+            "title": "1964_摩斯拉對哥吉拉【哥吉拉經典影展】",
+            "versions": [
+                "數位 2D"
+            ],
+            "showtimes": [
+                {
+                    "time": "22:30",
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "超級瑪利歐銀河電影版",
             "versions": [
-                "Dolby Cinema",
-                "IMAX2D",
-                "IMAX3D",
-                "中文(CHI)",
-                "英文(ENG)"
+                "數位 2D",
+                "IMAX"
             ],
             "showtimes": [
                 {
-                    "time": "10:30",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "12:30",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "16:40",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "18:40",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "20:40",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "14:10",
-                    "ver": "IMAX2D"
-                },
-                {
-                    "time": "19:10",
-                    "ver": "IMAX2D"
-                },
-                {
-                    "time": "21:10",
-                    "ver": "IMAX2D"
-                },
-                {
-                    "time": "23:10",
-                    "ver": "IMAX2D"
-                },
-                {
-                    "time": "12:05",
-                    "ver": "IMAX3D"
-                },
-                {
                     "time": "10:00",
-                    "ver": "中文(CHI)"
+                    "ver": "數位 2D"
                 },
                 {
-                    "time": "12:00",
-                    "ver": "中文(CHI)"
-                },
-                {
-                    "time": "14:00",
-                    "ver": "中文(CHI)"
-                },
-                {
-                    "time": "16:00",
-                    "ver": "中文(CHI)"
-                },
-                {
-                    "time": "18:00",
-                    "ver": "中文(CHI)"
+                    "time": "10:30",
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "11:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "12:00",
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "12:05",
+                    "ver": "IMAX"
+                },
+                {
+                    "time": "12:30",
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "13:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "14:00",
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "14:10",
+                    "ver": "IMAX"
                 },
                 {
                     "time": "15:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "16:00",
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "16:40",
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "17:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "18:00",
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "18:40",
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "19:10",
+                    "ver": "IMAX"
                 },
                 {
                     "time": "19:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "20:40",
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "21:10",
+                    "ver": "IMAX"
                 },
                 {
                     "time": "21:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "23:10",
+                    "ver": "IMAX"
                 }
             ]
         },
         {
             "title": "狸想世界",
             "versions": [
-                "Dolby Cinema",
-                "中文(CHI)",
-                "英文(ENG)"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "18:30",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "12:00",
-                    "ver": "中文(CHI)"
-                },
-                {
-                    "time": "15:40",
-                    "ver": "中文(CHI)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "18:40",
-                    "ver": "中文(CHI)"
-                },
-                {
-                    "time": "13:10",
-                    "ver": "英文(ENG)"
-                },
-                {
-                    "time": "14:20",
-                    "ver": "英文(ENG)"
-                },
-                {
-                    "time": "15:20",
-                    "ver": "英文(ENG)"
-                },
-                {
-                    "time": "16:30",
-                    "ver": "英文(ENG)"
-                },
-                {
-                    "time": "17:30",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "19:40",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "20:30",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "21:50",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "22:10",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "22:50",
-                    "ver": "英文(ENG)"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "極限返航",
             "versions": [
-                "Dolby Cinema",
-                "IMAX",
-                "標準廳"
+                "數位 2D",
+                "IMAX"
             ],
             "showtimes": [
                 {
-                    "time": "12:30",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "15:30",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "20:40",
-                    "ver": "Dolby Cinema"
-                },
-                {
-                    "time": "13:00",
-                    "ver": "IMAX"
-                },
-                {
-                    "time": "16:00",
-                    "ver": "IMAX"
+                    "time": "18:00",
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "19:00",
                     "ver": "IMAX"
                 },
                 {
-                    "time": "22:00",
-                    "ver": "IMAX"
-                },
-                {
-                    "time": "14:00",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "15:00",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "17:00",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "18:00",
-                    "ver": "標準廳"
-                },
-                {
                     "time": "20:00",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "20:40",
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "21:00",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
+                },
+                {
+                    "time": "22:00",
+                    "ver": "IMAX"
                 }
             ]
         },
         {
             "title": "他們要殺你",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
-                    "time": "12:20",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "14:10",
-                    "ver": "標準廳"
-                },
-                {
                     "time": "18:50",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "20:50",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
@@ -542,7 +440,7 @@
             "title": "捕風追影",
             "versions": [
                 "IMAX",
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
@@ -550,159 +448,135 @@
                     "ver": "IMAX"
                 },
                 {
+                    "time": "13:20",
+                    "ver": "數位 2D"
+                },
+                {
                     "time": "16:10",
                     "ver": "IMAX"
                 },
                 {
-                    "time": "13:20",
-                    "ver": "標準廳"
-                },
-                {
                     "time": "20:00",
-                    "ver": "標準廳"
-                }
-            ]
-        },
-        {
-            "title": "深度安靜",
-            "versions": [
-                "標準廳"
-            ],
-            "showtimes": [
-                {
-                    "time": "12:20",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "14:30",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "16:40",
-                    "ver": "標準廳"
-                },
-                {
-                    "time": "18:20",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "劇場版「暗殺教室」：我們的時光",
             "versions": [
-                "日文(JPN)"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "10:10",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "16:00",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "18:20",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "20:10",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
+                }
+            ]
+        },
+        {
+            "title": "深度安靜",
+            "versions": [
+                "數位 2D"
+            ],
+            "showtimes": [
+                {
+                    "time": "18:20",
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "陽光女子合唱團",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
-                    "time": "13:00",
-                    "ver": "標準廳"
-                },
-                {
                     "time": "22:40",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "秒速5公分 導演特別映像版",
             "versions": [
-                "日文(JPN)"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "16:50",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "18:30",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 },
                 {
                     "time": "23:10",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "機動戰士鋼彈 閃光的哈薩威 喀耳刻的魔女",
             "versions": [
-                "日文(JPN)"
+                "數位 2D"
             ],
             "showtimes": [
                 {
-                    "time": "16:10",
-                    "ver": "日文(JPN)"
-                },
-                {
                     "time": "23:00",
-                    "ver": "日文(JPN)"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "空之境界劇場版：第六章 忘卻錄音",
             "versions": [
-                "日文(JPN)"
+                "數位 2D"
             ],
             "showtimes": [
-                {
-                    "time": "13:30",
-                    "ver": "日文(JPN)"
-                },
                 {
                     "time": "20:50",
-                    "ver": "日文(JPN)"
-                }
-            ]
-        },
-        {
-            "title": "雙囍",
-            "versions": [
-                "標準廳"
-            ],
-            "showtimes": [
-                {
-                    "time": "17:50",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
                 }
             ]
         },
         {
             "title": "追殺比爾：完全血腥事件",
             "versions": [
-                "標準廳"
+                "數位 2D"
             ],
             "showtimes": [
                 {
                     "time": "20:20",
-                    "ver": "標準廳"
+                    "ver": "數位 2D"
+                }
+            ]
+        },
+        {
+            "title": "雙囍",
+            "versions": [
+                "數位 2D"
+            ],
+            "showtimes": [
+                {
+                    "time": "18:00",
+                    "ver": "數位 2D"
                 }
             ]
         }
     ],
-    "updatedAt": "2026/3/26 上午11:25:54"
+    "updatedAt": "2026/3/26 下午6:03:36"
 }

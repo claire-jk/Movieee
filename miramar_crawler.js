@@ -1,4 +1,3 @@
-// 美麗華爬蟲增強版：加入自動化版本標準化與標題清洗
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { dirname, join } from 'path';
@@ -10,7 +9,7 @@ chromium.use(stealth());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// --- 取得今天日期 (格式如 3/26) ---
+// --- 取得今天日期 ---
 const now = new Date();
 const todayStr = `${now.getMonth() + 1}/${now.getDate()}`;
 
@@ -25,18 +24,41 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+// --- 工具函數 ---
+
+function standardizeVersion(rawVer) {
+    const v = rawVer.toUpperCase();
+    if (v.includes('IMAX')) return 'IMAX';
+    if (v.includes('4DX')) return '4DX';
+    if (v.includes('SCREENX')) return v.includes('3D') ? 'ScreenX 3D' : 'ScreenX';
+    if (v.includes('3D')) return '數位 3D';
+    if (v.includes('LIVE') || v.includes('現場直播')) return 'LIVE';
+    return '數位 2D';
+}
+
+function cleanMovieTitle(fullTitle) {
+    return fullTitle
+        .replace(/\(.*?\)/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/特別場|鐵粉|首日|首場|特別映演|安可重播|現場直播/g, '')
+        .replace(/3D|4DX|IMAX|SCREENX|數位|英|日|國|韓|泰|粵|分級|普遍級|保護級|輔12級|輔15級|限制級|待定/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 async function runMiramarCrawl() {
     const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
+    const context = await browser.newContext();
+    const page = await context.newPage();
 
-    console.log(`🚀 美麗華影城更新啟動 - 目標日期：${todayStr}`);
+    console.log(`🚀 美麗華影城更新啟動 [標準化合併版] - 目標日期：${todayStr}`);
 
     try {
         await page.goto('https://www.miramarcinemas.tw/Timetable/Index?cinema=standard', { 
             waitUntil: 'networkidle' 
         });
 
-        // 模擬點擊第一家影城（大直）
+        // 點選大直影城
         await page.click('ul.cinema li a'); 
         await page.waitForSelector('.booking_time', { timeout: 15000 });
         await page.waitForTimeout(2000); 
@@ -50,10 +72,9 @@ async function runMiramarCrawl() {
                 if (!titleElement) return;
 
                 const rawTitle = titleElement.innerText.trim();
-                const showtimes = [];
-                const versionSet = new Set();
-
+                const showtimeData = [];
                 const blocks = container.querySelectorAll('.time_list_right .block');
+
                 blocks.forEach(block => {
                     const style = window.getComputedStyle(block);
                     if (style.display === 'none') return;
@@ -62,88 +83,67 @@ async function runMiramarCrawl() {
                     const roomDiv = block.querySelector('.room');
                     if (!roomDiv) return;
 
-                    // 原始版本名稱 (例如 "IMAX2D", "雷射數位")
-                    const rawVersionName = roomDiv.innerText.replace(/watch_later/g, '').trim();
-                    
+                    const rawVer = roomDiv.innerText.replace(/watch_later/g, '').trim();
                     const timeElements = block.querySelectorAll('.booking_time');
+                    
                     timeElements.forEach(t => {
                         const timeStr = t.innerText.trim();
                         if (/^\d{2}:\d{2}$/.test(timeStr)) {
-                            versionSet.add(rawVersionName);
-                            showtimes.push({
-                                "time": timeStr,
-                                "ver": rawVersionName
-                            });
+                            showtimeData.push({ time: timeStr, rawVer: rawVer });
                         }
                     });
                 });
 
-                if (showtimes.length > 0) {
-                    movies.push({ 
-                        title: rawTitle, 
-                        versions: Array.from(versionSet),
-                        showtimes 
-                    });
+                if (showtimeData.length > 0) {
+                    movies.push({ rawTitle, showtimeData });
                 }
             });
             return movies;
         });
 
-        // --- 📥 資料清洗與增強匹配邏輯 ---
-        const cleanedResults = rawResults.map(movie => {
-            // 1. 標題清洗：移除 "_首日瘋特別場"、"(待定)" 等後綴，確保能跟威秀合併
-            const cleanedTitle = movie.title
-                .split('_')[0]   // 處理美麗華常用的底線分隔
-                .split('(')[0]   // 處理括號
-                .trim();
+        // --- 📥 資料清洗、標準化與合併 (重要修正) ---
+        const cinemaMoviesMap = new Map();
 
-            // 2. 版本標準化函數
-// 2. 版本標準化函數 (增強版：處理語言標籤)
-const standardizeVersion = (ver) => {
-    const v = ver.toUpperCase();
+        rawResults.forEach(m => {
+            const title = cleanMovieTitle(m.rawTitle);
+            
+            if (!cinemaMoviesMap.has(title)) {
+                cinemaMoviesMap.set(title, {
+                    title: title,
+                    versions: [],
+                    showtimes: []
+                });
+            }
 
-    // 優先判斷特殊硬體版本
-    if (v.includes('IMAX')) return 'IMAX';
-    if (v.includes('4DX')) return '4DX';
-    if (v.includes('DOLBY')) return 'Dolby Cinema';
-    if (v.includes('3D')) return '數位 3D'; // 雖然美麗華現在較少 3D，但保留判斷
+            const movieEntry = cinemaMoviesMap.get(title);
 
-    // 核心修正：如果包含「數位」、「2D」、「中文」、「英文」、「CHI」、「ENG」
-    // 通通歸類為「數位 2D」
-    if (
-        v.includes('數位') || 
-        v.includes('2D') || 
-        v.includes('中文') || 
-        v.includes('英文') || 
-        v.includes('CHI') || 
-        v.includes('ENG')
-    ) {
-        return '數位 2D';
-    }
+            m.showtimeData.forEach(s => {
+                const finalVer = standardizeVersion(s.rawVer);
+                
+                if (!movieEntry.versions.includes(finalVer)) {
+                    movieEntry.versions.push(finalVer);
+                }
 
-    // 若都不符合（例如預告片或其他標籤），預設給數位 2D 或回傳原始值
-    return '數位 2D'; 
-};
-
-            // 處理所有場次中的版本字串
-            const cleanedShowtimes = movie.showtimes.map(s => ({
-                ...s,
-                ver: standardizeVersion(s.ver)
-            }));
-
-            // 處理 versions 陣列並去重
-            const cleanedVersions = Array.from(new Set(movie.versions.map(v => standardizeVersion(v))));
-
-            return {
-                title: cleanedTitle,
-                originalTitle: movie.title, // 保留原始標題備查
-                versions: cleanedVersions,
-                showtimes: cleanedShowtimes
-            };
+                // 檢查重複 (避免不同原始標題合併後產生重複場次)
+                const isDup = movieEntry.showtimes.some(st => st.time === s.time && st.ver === finalVer);
+                if (!isDup) {
+                    movieEntry.showtimes.push({
+                        time: s.time,
+                        ver: finalVer
+                    });
+                }
+            });
         });
 
-        if (cleanedResults.length > 0) {
-            console.log(`📡 清洗完成！準備上傳 ${cleanedResults.length} 部電影至 Firestore...`);
+        const finalMovies = Array.from(cinemaMoviesMap.values());
+        
+        // 排序場次時間
+        finalMovies.forEach(m => {
+            m.showtimes.sort((a, b) => a.time.localeCompare(b.time));
+        });
+
+        if (finalMovies.length > 0) {
+            console.log(`📡 清洗完成！準備同步至 Firestore (共 ${finalMovies.length} 部電影)...`);
 
             const docId = "miramar_dazhi";
             const docRef = db.collection('realtime_showtimes').doc(docId);
@@ -151,20 +151,22 @@ const standardizeVersion = (ver) => {
             await docRef.set({
                 cinemaName: "美麗華大直影城",
                 date: todayStr,
-                movies: cleanedResults,
+                city: "台北市",
+                location: { lat: 25.0837, lng: 121.5566 }, // 大直美麗華座標
+                movies: finalMovies,
                 updatedAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            console.log("✅ 美麗華資料已成功更新（標題與版本已標準化）！");
+            console.log("✅ 美麗華資料已成功更新！");
         } else {
             console.log("⚠️ 抓取結果為空。");
         }
 
     } catch (err) {
         console.error("🔥 錯誤:", err.message);
-        process.exit(1);
     } finally {
         await browser.close();
+        console.log("🏁 任務結束");
     }
 }
 

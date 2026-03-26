@@ -61,8 +61,9 @@ const cinemas = [
   { "id": "st_dream_mall", "showtimesId": "1083", "name": "高雄夢時代秀泰影城", "city": "高雄市", "lat": 22.5951, "lng": 120.3069 },
   { "id": "st_hualien", "showtimesId": "1074", "name": "花蓮秀泰影城", "city": "花蓮縣", "lat": 23.9881, "lng": 121.6072 },
   { "id": "st_taitung", "showtimesId": "1029", "name": "台東秀泰影城", "city": "台東縣", "lat": 22.7523, "lng": 121.1481 },
-{ "id": "broadway_taipei", "name": "百老匯公館店", "city": "台北市", "lat": 25.0145, "lng": 121.5364 },
-  { "id": "broadway_zhubei", "name": "百老匯竹北店", "city": "新竹縣", "lat": 24.8035, "lng": 120.9680 }
+  { "id": "broadway_taipei", "name": "百老匯公館店", "city": "台北市", "lat": 25.0145, "lng": 121.5364 },
+  { "id": "broadway_zhubei", "name": "百老匯竹北店", "city": "新竹縣", "lat": 24.8035, "lng": 120.9680 },
+  { "id": "miramar_dazhi", "name": "美麗華大直影城", "city": "台北市", "lat": 25.0837, "lng": 121.5577 }
 ];
 
 async function uploadData() {

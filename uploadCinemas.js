@@ -1,3 +1,4 @@
+//上傳cinemas及其lat lng
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { dirname, join } from 'path';
@@ -59,7 +60,9 @@ const cinemas = [
   { "id": "st_gangshan", "showtimesId": "1081", "name": "高雄岡山秀泰影城", "city": "高雄市", "lat": 22.7845, "lng": 120.2965 },
   { "id": "st_dream_mall", "showtimesId": "1083", "name": "高雄夢時代秀泰影城", "city": "高雄市", "lat": 22.5951, "lng": 120.3069 },
   { "id": "st_hualien", "showtimesId": "1074", "name": "花蓮秀泰影城", "city": "花蓮縣", "lat": 23.9881, "lng": 121.6072 },
-  { "id": "st_taitung", "showtimesId": "1029", "name": "台東秀泰影城", "city": "台東縣", "lat": 22.7523, "lng": 121.1481 }
+  { "id": "st_taitung", "showtimesId": "1029", "name": "台東秀泰影城", "city": "台東縣", "lat": 22.7523, "lng": 121.1481 },
+{ "id": "broadway_taipei", "name": "百老匯公館店", "city": "台北市", "lat": 25.0145, "lng": 121.5364 },
+  { "id": "broadway_zhubei", "name": "百老匯竹北店", "city": "新竹縣", "lat": 24.8035, "lng": 120.9680 }
 ];
 
 async function uploadData() {
@@ -68,16 +71,27 @@ async function uploadData() {
 
   for (const cinema of cinemas) {
     try {
+      // 更加精確的品牌標註邏輯
+      let brand = 'unknown';
+      if (cinema.vieshowId || cinema.id.includes('tp') || cinema.id.includes('ntp')) {
+        brand = 'vieshow';
+      } else if (cinema.showtimesId) {
+        brand = 'showtimes';
+      } else if (cinema.id.startsWith('broadway')) {
+        brand = 'broadway';
+      }
+
       await collectionRef.doc(cinema.id).set({
         name: cinema.name,
-        city: cinema.city,
+        city: cinema.city || "未知城市", // 防止城市漏填導致崩潰
         lat: cinema.lat,
         lng: cinema.lng,
-        internalId: cinema.vieshowId || cinema.showtimesId, 
-        brand: cinema.id.startsWith('tp') || cinema.id.startsWith('ntp') ? 'vieshow' : 'showtimes', // 標註品牌
+        internalId: cinema.vieshowId || cinema.showtimesId || "", 
+        brand: brand, 
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-      console.log(`✅ 已新增: ${cinema.name}`);
+      }, { merge: true }); // 使用 merge 避免覆蓋掉現有欄位
+      
+      console.log(`✅ 已新增: ${cinema.name} (${brand})`);
     } catch (error) {
       console.error(`❌ 失敗: ${cinema.name}`, error);
     }

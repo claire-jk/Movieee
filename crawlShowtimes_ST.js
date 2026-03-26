@@ -1,3 +1,4 @@
+//秀泰影城爬蟲上傳至 Firestore
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { dirname, join } from 'path';
@@ -21,21 +22,21 @@ const db = admin.firestore();
 
 // 秀泰影城清單
 const stCinemas = [
-  { "id": "st_keelung", "showtimesId": "1002", "name": "基隆秀泰影城", "city": "基隆市" },
-  { "id": "st_today", "showtimesId": "1004", "name": "台北欣欣秀泰影城", "city": "台北市" },
-  { "id": "st_dome", "showtimesId": "1085", "name": "台北大巨蛋秀泰影城", "city": "台北市" },
-  { "id": "st_shulin", "showtimesId": "1069", "name": "樹林秀泰影城", "city": "新北市" },
-  { "id": "st_tucheng", "showtimesId": "1071", "name": "土城秀泰影城", "city": "新北市" },
-  { "id": "st_taichung_station", "showtimesId": "1054", "name": "台中站前秀泰影城", "city": "台中市" },
-  { "id": "st_wenxin", "showtimesId": "1067", "name": "台中文心秀泰影城", "city": "台中市" },
-  { "id": "st_lihpaio", "showtimesId": "1076", "name": "台中麗寶秀泰影城", "city": "台中市" },
-  { "id": "st_beigang", "showtimesId": "1078", "name": "雲林北港秀泰影城", "city": "雲林縣" },
-  { "id": "st_chiayi", "showtimesId": "1034", "name": "嘉義秀泰影城", "city": "嘉義市" },
-  { "id": "st_rende", "showtimesId": "1079", "name": "台南仁德秀泰影城", "city": "台南市" },
-  { "id": "st_gangshan", "showtimesId": "1081", "name": "高雄岡山秀泰影城", "city": "高雄市" },
-  { "id": "st_dream_mall", "showtimesId": "1083", "name": "高雄夢時代秀泰影城", "city": "高雄市" },
-  { "id": "st_hualien", "showtimesId": "1074", "name": "花蓮秀泰影城", "city": "花蓮縣" },
-  { "id": "st_taitung", "showtimesId": "1029", "name": "台東秀泰影城", "city": "台東縣" }
+  { "id": "st_keelung", "name": "基隆秀泰影城", "lat": 25.1301, "lng": 121.7441 },
+  { "id": "st_today", "name": "台北欣欣秀泰影城", "lat": 25.0537, "lng": 121.5262 },
+  { "id": "st_dome", "name": "台北大巨蛋秀泰影城", "lat": 25.0441, "lng": 121.5606 },
+  { "id": "st_shulin", "name": "樹林秀泰影城", "lat": 24.9926, "lng": 121.4259 },
+  { "id": "st_tucheng", "name": "土城秀泰影城", "lat": 24.9785, "lng": 121.4449 },
+  { "id": "st_taichung_station", "name": "台中站前秀泰影城", "lat": 24.1378, "lng": 120.6901 },
+  { "id": "st_wenxin", "name": "台中文心秀泰影城", "lat": 24.1275, "lng": 120.6483 },
+  { "id": "st_lihpaio", "name": "台中麗寶秀泰影城", "lat": 24.3218, "lng": 120.6946 },
+  { "id": "st_beigang", "name": "雲林北港秀泰影城", "lat": 23.5753, "lng": 120.3013 },
+  { "id": "st_chiayi", "name": "嘉義秀泰影城", "lat": 23.4842, "lng": 120.4444 },
+  { "id": "st_rende", "name": "台南仁德秀泰影城", "lat": 22.9733, "lng": 120.2503 },
+  { "id": "st_gangshan", "name": "高雄岡山秀泰影城", "lat": 22.7845, "lng": 120.3049 },
+  { "id": "st_dream_mall", "name": "高雄夢時代秀泰影城", "lat": 22.5951, "lng": 120.3069 },
+  { "id": "st_hualien", "name": "花蓮秀泰影城", "lat": 23.9929, "lng": 121.6062 },
+  { "id": "st_taitung", "name": "台東秀泰影城", "lat": 22.7523, "lng": 121.1507 }
 ];
 
 /**

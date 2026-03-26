@@ -1,4 +1,3 @@
-//百老匯影城爬蟲上傳至 Firestore
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { dirname, join } from 'path';
@@ -10,18 +9,20 @@ chromium.use(stealth());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// 🛠️ 修正 1：完全依照測試腳本的日期取得邏輯 (ISO 格式：2026-03-26)
+const today = new Date().toISOString().split('T')[0];
+
 // --- Firebase 初始化 ---
-// 優先讀取環境變數 (GitHub Actions 使用)，否則讀取本地檔案
+const serviceAccountPath = join(__dirname, 'serviceAccount.json');
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
     ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    : JSON.parse(fs.readFileSync(join(__dirname, 'serviceAccount.json'), 'utf8'));
+    : JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
 if (!admin.apps.length) {
     admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 }
 const db = admin.firestore();
 
-// 百老匯影城清單 (對應 Firestore ID 與 API 網址)
 const broadwayCinemas = [
     { id: "broadway_taipei", name: "百老匯公館店", url: "https://www.broadway-cineplex.com.tw/Movie/GetMovieList/Taipei" },
     { id: "broadway_zhubei", name: "百老匯竹北店", url: "https://www.broadway-cineplex.com.tw/Movie/GetMovieList/Zhubei" }
@@ -32,7 +33,7 @@ async function runBroadwayCrawl() {
     const context = await browser.newContext();
     const cinemaDataMap = new Map();
 
-    console.log("🚀 百老匯 API 抓取啟動 (同步至 Firestore)...");
+    console.log(`🚀 百老匯 API 啟動 - 目標日期：${today}`);
 
     try {
         for (const cinema of broadwayCinemas) {
@@ -49,66 +50,77 @@ async function runBroadwayCrawl() {
                 const json = await response.json();
                 
                 if (json.status && Array.isArray(json.Data)) {
-                    const moviesData = json.Data.map(movie => {
-                        const allShowtimes = [];
-                        const allVersions = [];
+                    const moviesToday = [];
+
+                    json.Data.forEach(movie => {
+                        const movieEntry = {
+                            title: movie.cname,
+                            versions: [],
+                            showtimes: []
+                        };
 
                         (movie.timedata || []).forEach(ver => {
                             const versionName = ver.SubName2 || "數位";
-                            if (!allVersions.includes(versionName)) {
-                                allVersions.push(versionName);
-                            }
 
                             (ver.subtimedata || []).forEach(t => {
-                                if (t["時間"]) {
-                                    allShowtimes.push({
-                                        "time": t["時間"],
-                                        "ver": versionName
+                                // 🛠️ 修正 2：完全依照測試腳本的比對邏輯
+                                // 取得 PlayDate 並將斜線換成橫線
+                                const playDate = t["PlayDate"] ? t["PlayDate"].split(' ')[0].replace(/\//g, '-') : today;
+
+                                if (playDate === today) {
+                                    if (!movieEntry.versions.includes(versionName)) {
+                                        movieEntry.versions.push(versionName);
+                                    }
+                                    movieEntry.showtimes.push({
+                                        time: t["時間"],
+                                        ver: versionName
                                     });
                                 }
                             });
                         });
 
-                        return {
-                            "title": movie.cname,
-                            "versions": allVersions,
-                            "showtimes": allShowtimes
-                        };
-                    }).filter(m => m.showtimes.length > 0);
+                        // 排序場次
+                        if (movieEntry.showtimes.length > 0) {
+                            movieEntry.showtimes.sort((a, b) => a.time.localeCompare(b.time));
+                            moviesToday.push(movieEntry);
+                        }
+                    });
 
-                    // 存入 Map 以供後續 Firestore 寫入
                     cinemaDataMap.set(cinema.id, { 
                         cinemaName: cinema.name, 
-                        movies: moviesData 
+                        date: today,
+                        movies: moviesToday 
                     });
                     
-                    console.log(`   ✅ ${cinema.name} 抓取成功，共 ${moviesData.length} 部電影`);
+                    console.log(`   ✅ ${cinema.name} 解析完成，今日共有 ${moviesToday.length} 部電影場次`);
                 }
             } else {
-                console.log(`   ❌ ${cinema.name} 請求失敗，狀態碼: ${response.status()}`);
+                console.log(`   ❌ ${cinema.name} 請求失敗`);
             }
         }
 
-        // --- 🚀 同步至 Firestore ---
-        console.log("\n📤 正在同步至 Firestore (realtime_showtimes)...");
-        const batch = db.batch();
-        
-        for (const [cinemaId, data] of cinemaDataMap) {
-            const docRef = db.collection('realtime_showtimes').doc(cinemaId);
-            batch.set(docRef, {
-                ...data,
-                updatedAt: admin.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+        // --- 📤 同步至 Firestore ---
+        if (cinemaDataMap.size > 0) {
+            console.log("\n📤 正在同步至 Firestore...");
+            const batch = db.batch();
+            for (const [cinemaId, data] of cinemaDataMap) {
+                const docRef = db.collection('realtime_showtimes').doc(cinemaId);
+                batch.set(docRef, {
+                    ...data,
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+            await batch.commit();
+            console.log("✅ 全部百老匯資料同步成功！");
+        } else {
+            console.log("\n⚠️ 無今日資料，跳過 Firestore 更新");
         }
 
-        await batch.commit();
-        console.log("✅ 全部百老匯影城資料同步成功！");
-
     } catch (err) {
-        console.error("🔥 發生錯誤:", err.message);
-        process.exit(1); // 確保 GitHub Actions 知道出錯了
+        console.error("🔥 嚴重錯誤:", err.message);
     } finally {
         await browser.close();
+        console.log("🏁 任務結束");
     }
 }
 

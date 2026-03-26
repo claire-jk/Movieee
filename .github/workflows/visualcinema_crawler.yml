@@ -44,6 +44,12 @@ jobs:
         run: node broadway_crawler.js  # 這裡填入你剛剛建立的百老匯腳本檔名
         env:
           NODE_ENV: production
+      
+      - name: Run Miramar Crawler (美麗華)
+        run: node miramar_crawler.js
+        env:
+          NODE_ENV: production
+          TZ: Asia/Taipei
 
       # 錯誤監控：如果執行失敗，發送通知 (可選)
       - name: Check Status

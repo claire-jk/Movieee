@@ -1,4 +1,3 @@
-import admin from 'firebase-admin';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
 import { dirname, join } from 'path';
@@ -10,19 +9,11 @@ chromium.use(stealth());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const serviceAccountPath = join(__dirname, 'serviceAccount.json');
 
-// 🔥 1. 取得台灣當天日期 (用於過濾 API 與 寫入資料庫)
+// 1. 取得台灣當天日期，格式化為威秀 HTML 顯示的 "MM月DD日" (例如 03月26日)
 const now = new Date();
 const todayDateStr = `${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日`;
 const todayFullStr = now.toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' });
-
-// 🔥 2. Firebase 初始化
-if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-}
-const db = admin.firestore();
 
 const cinemas = [
     { "id": "tp_xinyi", "vId": "1", "name": "台北信義威秀影城", "city": "台北市", "lat": 25.0354, "lng": 121.5671 },
@@ -54,7 +45,6 @@ function cleanMovieTitle(fullTitle) {
     else if (/IMAX/i.test(fullTitle)) version = "IMAX";
     else if (/3D/i.test(fullTitle)) version = "3D";
     else if (/SCREENX/i.test(fullTitle)) version = "ScreenX";
-    else if (/LIVE/i.test(fullTitle)) version = "LIVE";
 
     let cleanTitle = fullTitle
         .replace(/\(.*?\)/g, '')
@@ -86,23 +76,19 @@ function mergeMovieData(rawData) {
     return merged;
 }
 
-async function crawl() {
-    console.log(`\n⏰ 啟動更新任務: ${todayFullStr} (目標日期: ${todayDateStr})`);
+async function runTest() {
+    console.log(`\n🚀 威秀當日場次過濾測試`);
+    console.log(`📅 系統今天: ${todayFullStr} | 關鍵字: ${todayDateStr}`);
 
     const browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext({
-        viewport: { width: 1280, height: 800 },
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-    });
-
-    const page = await context.newPage();
+    const page = await browser.newPage();
+    const allResults = [];
 
     for (const cinema of cinemas) {
         try {
-            console.log(`\n🌐 處理影城: ${cinema.name}`);
+            console.log(`\n🌐 正在處理: ${cinema.name}`);
             let apiRawData = null;
 
-            // 監聽並攔截 API 回傳的完整一週 HTML
             page.removeAllListeners('response');
             page.on('response', async (response) => {
                 if (response.url().includes('GetShowTimes')) {
@@ -112,20 +98,25 @@ async function crawl() {
                         const doc = dom.window.document;
                         const results = [];
 
-                        // 遍歷所有電影區塊
+                        // 威秀 API 的內容是平鋪的，日期、場次都在 .col-xs-12 裡面
                         doc.querySelectorAll('.col-xs-12').forEach(block => {
                             const title = block.querySelector('.MovieName')?.textContent.trim();
-                            const allNodes = Array.from(block.querySelectorAll('strong, div'));
                             
+                            // 核心過濾邏輯：掃描區塊內所有節點
+                            const allNodes = Array.from(block.querySelectorAll('strong, div'));
                             let isTargetDate = false;
                             let extractedTimes = [];
 
-                            // 狀態機邏輯：只抓今天日期下方的時間
                             allNodes.forEach(node => {
                                 const text = node.textContent.trim();
+                                
+                                // 1. 偵測到「日期行」(包含星期字眼)
                                 if (text.includes('星期')) {
+                                    // 2. 判斷是否為我們要的日期 (例如：03月26日)
                                     isTargetDate = text.includes(todayDateStr);
                                 }
+                                
+                                // 3. 如果目前處於目標日期區塊，且文字符合時間格式
                                 if (isTargetDate && /^\d{2}:\d{2}$/.test(text)) {
                                     extractedTimes.push(text);
                                 }
@@ -142,7 +133,6 @@ async function crawl() {
 
             await page.goto('https://www.vscinemas.com.tw/ShowTimes/', { waitUntil: 'networkidle' });
 
-            // 模擬點擊下拉選單
             await page.evaluate((cName) => {
                 const select = document.querySelector('#CinemaNameTWInfoS');
                 if (select) {
@@ -158,14 +148,14 @@ async function crawl() {
 
             let finalData = [];
             if (apiRawData && apiRawData.length > 0) {
-                console.log(`🎯 API 攔截成功，已篩選當日場次`);
+                console.log("🎯 API 解析成功，已過濾非當日場次");
                 finalData = mergeMovieData(apiRawData);
             } else {
-                console.log("⚠️ API 沒抓到 -> 執行 UI 過濾爬取");
+                console.log("⚠️ API 沒抓到，嘗試 UI 爬取...");
+                // UI 爬取同樣透過 display 屬性確保只抓畫面上顯示的當天資料
                 const uiRaw = await page.evaluate(() => {
                     const results = [];
                     document.querySelectorAll('.row').forEach(row => {
-                        // 利用 UI 的隱藏屬性 (只抓當下顯示的日期)
                         if (window.getComputedStyle(row).display === 'none') return;
                         const titleEl = row.querySelector('.LangTW.MovieName');
                         if (!titleEl) return;
@@ -180,26 +170,25 @@ async function crawl() {
                 finalData = mergeMovieData(uiRaw);
             }
 
-            // 🔥 上傳 Firebase
             if (finalData.length > 0) {
-                await db.collection('realtime_showtimes').doc(cinema.id).set({
+                allResults.push({
+                    cinemaId: cinema.id,
                     cinemaName: cinema.name,
                     date: todayFullStr,
-                    location: new admin.firestore.GeoPoint(cinema.lat, cinema.lng),
-                    city: cinema.city,
-                    movies: finalData,
-                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-
-                console.log(`✅ ${cinema.name}：完成 (共 ${finalData.length} 部電影)`);
+                    movies: finalData
+                });
+                console.log(`✅ 成功獲取 ${finalData.length} 部電影場次`);
             }
+
         } catch (e) {
-            console.log(`❌ ${cinema.name} 錯誤: ${e.message}`);
+            console.error(`❌ ${cinema.name} 錯誤: ${e.message}`);
         }
     }
 
+    const outputPath = join(__dirname, 'vscinemas_daily_test.json');
+    fs.writeFileSync(outputPath, JSON.stringify(allResults, null, 4), 'utf8');
+    console.log(`\n🏁 任務完成！檔案已存至: ${outputPath}`);
     await browser.close();
-    console.log('\n🏁 威秀影城全數更新完成');
 }
 
-crawl();
+runTest();

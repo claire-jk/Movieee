@@ -55,7 +55,6 @@ function cleanMovieTitle(fullTitle) {
     else if (/3D/i.test(fullTitle)) version = "3D";
     else if (/SCREENX/i.test(fullTitle)) version = "ScreenX";
     else if (/LIVE/i.test(fullTitle)) version = "LIVE";
-
     let cleanTitle = fullTitle
         .replace(/\(.*?\)/g, '')
         .replace(/3D|4DX|IMAX|GOLD CLASS|SCREENX|數位|英|日|國|分級|普遍級|保護級|輔12級|輔15級|限制級|待定/gi, '')

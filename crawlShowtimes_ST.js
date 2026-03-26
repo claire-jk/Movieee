@@ -9,9 +9,13 @@ chromium.use(stealth());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 🔥 1. 取得台灣當天日期 (用於寫入資料庫標記)
 const now = new Date();
-const todayFullStr = now.toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' });
+const todayFullStr = now.toLocaleDateString('zh-TW', { 
+    timeZone: 'Asia/Taipei', 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit' 
+});
 
 // --- Firebase 初始化 ---
 const serviceAccountPath = join(__dirname, 'serviceAccount.json');
@@ -24,29 +28,65 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
-// 秀泰影城清單 (含座標)
 const stCinemas = [
-  { "id": "st_keelung", "name": "基隆秀泰影城", "lat": 25.1301, "lng": 121.7441, "city": "基隆市" },
-  { "id": "st_today", "name": "台北欣欣秀泰影城", "lat": 25.0537, "lng": 121.5262, "city": "台北市" },
-  { "id": "st_dome", "name": "台北大巨蛋秀泰影城", "lat": 25.0441, "lng": 121.5606, "city": "台北市" },
-  { "id": "st_shulin", "name": "樹林秀泰影城", "lat": 24.9926, "lng": 121.4259, "city": "新北市" },
-  { "id": "st_tucheng", "name": "土城秀泰影城", "lat": 24.9785, "lng": 121.4449, "city": "新北市" },
-  { "id": "st_taichung_station", "name": "台中站前秀泰影城", "lat": 24.1378, "lng": 120.6901, "city": "台中市" },
-  { "id": "st_wenxin", "name": "台中文心秀泰影城", "lat": 24.1275, "lng": 120.6483, "city": "台中市" },
-  { "id": "st_lihpaio", "name": "台中麗寶秀泰影城", "lat": 24.3218, "lng": 120.6946, "city": "台中市" },
-  { "id": "st_beigang", "name": "雲林北港秀泰影城", "lat": 23.5753, "lng": 120.3013, "city": "雲林縣" },
-  { "id": "st_chiayi", "name": "嘉義秀泰影城", "lat": 23.4842, "lng": 120.4444, "city": "嘉義市" },
-  { "id": "st_rende", "name": "台南仁德秀泰影城", "lat": 22.9733, "lng": 120.2503, "city": "台南市" },
-  { "id": "st_gangshan", "name": "高雄岡山秀泰影城", "lat": 22.7845, "lng": 120.3049, "city": "高雄市" },
-  { "id": "st_dream_mall", "name": "高雄夢時代秀泰影城", "lat": 22.5951, "lng": 120.3069, "city": "高雄市" },
-  { "id": "st_hualien", "name": "花蓮秀泰影城", "lat": 23.9929, "lng": 121.6062, "city": "花蓮縣" },
-  { "id": "st_taitung", "name": "台東秀泰影城", "lat": 22.7523, "lng": 121.1507, "city": "台東縣" }
+  { "id": "st_keelung", "name": "基隆秀泰影城", "location": { "lat": 25.1311, "lng": 121.7445 }, "city": "基隆市" },
+  { "id": "st_today", "name": "台北欣欣秀泰影城", "location": { "lat": 25.0531, "lng": 121.5262 }, "city": "台北市" },
+  { "id": "st_dome", "name": "台北大巨蛋秀泰影城", "location": { "lat": 25.0441, "lng": 121.5606 }, "city": "台北市" },
+  { "id": "st_shulin", "name": "樹林秀泰影城", "location": { "lat": 24.9918, "lng": 121.4251 }, "city": "新北市" },
+  { "id": "st_tucheng", "name": "土城秀泰影城", "location": { "lat": 24.9821, "lng": 121.4468 }, "city": "新北市" },
+  { "id": "st_taichung_station", "name": "台中站前秀泰影城", "location": { "lat": 24.1415, "lng": 120.6903 }, "city": "台中市" },
+  { "id": "st_wenxin", "name": "台中文心秀泰影城", "location": { "lat": 24.1237, "lng": 120.6416 }, "city": "台中市" },
+  { "id": "st_lihpaio", "name": "台中麗寶秀泰影城", "location": { "lat": 24.3312, "lng": 120.6981 }, "city": "台中市" },
+  { "id": "st_beigang", "name": "雲林北港秀泰影城", "location": { "lat": 23.5702, "lng": 120.2981 }, "city": "雲林縣" },
+  { "id": "st_chiayi", "name": "嘉義秀泰影城", "location": { "lat": 23.4862, "lng": 120.4476 }, "city": "嘉義市" },
+  { "id": "st_rende", "name": "台南仁德秀泰影城", "location": { "lat": 22.9515, "lng": 120.2223 }, "city": "台南市" },
+  { "id": "st_gangshan", "name": "高雄岡山秀泰影城", "location": { "lat": 22.7845, "lng": 120.2965 }, "city": "高雄市" },
+  { "id": "st_dream_mall", "name": "高雄夢時代秀泰影城", "location": { "lat": 22.5951, "lng": 120.3069 }, "city": "高雄市" },
+  { "id": "st_hualien", "name": "花蓮秀泰影城", "location": { "lat": 23.9881, "lng": 121.6072 }, "city": "花蓮縣" },
+  { "id": "st_taitung", "name": "台東秀泰影城", "location": { "lat": 22.7523, "lng": 121.1481 }, "city": "台東縣" }
 ];
 
+// --- 工具函數 ---
+
+/**
+ * 🛠️ 修改：標準化版本名稱
+ */
+function standardizeShowtimesVersion(rawVer) {
+    const v = rawVer.toUpperCase();
+    if (v.includes('SCREENX')) return v.includes('3D') ? 'ScreenX 3D' : 'ScreenX';
+    if (v.includes('4DX')) return '4DX';
+    if (v.includes('IMAX')) return 'IMAX';
+    if (v.includes('3D')) return '數位 3D';
+    if (v.includes('LIVE') || v.includes('現場直播')) return 'LIVE';
+    return '數位 2D';
+}
+
+/**
+ * 🛠️ 修改：強化標題清洗 (移除特別場、首日等字眼)
+ */
 function cleanMovieTitle(fullTitle) {
-    return fullTitle.replace(/\(.*?\)/g, '')
-        .replace(/3D|4DX|IMAX|SCREENX|數位|英|日|國|分級|普遍級|保護級|輔12級|輔15級|限制級/gi, '')
-        .replace(/\s+/g, ' ').trim();
+    return fullTitle
+        .replace(/\(.*?\)/g, '')
+        .replace(/特別場|鐵粉|首日|首場|特別映演|安可重播|現場直播/g, '')
+        .replace(/3D|4DX|IMAX|SCREENX|數位|英|日|國|韓|泰|粵|分級|普遍級|保護級|輔12級|輔15級|限制級|待定/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * 🚀 新增：具備重試機制的導航函數 (解決之前的 DISCONNECTED 錯誤)
+ */
+async function gotoWithRetry(page, url, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            return;
+        } catch (err) {
+            console.log(`⚠️ 連線失敗 (第 ${i + 1} 次重試): ${err.message}`);
+            if (i === retries - 1) throw err;
+            await new Promise(res => setTimeout(res, 3000));
+        }
+    }
 }
 
 async function runStCrawl() {
@@ -58,22 +98,17 @@ async function runStCrawl() {
 
     try {
         console.log("🌐 正在進入秀泰電影列表...");
-        await page.goto('https://www.showtimes.com.tw/programs', { waitUntil: 'networkidle' });
+        await gotoWithRetry(page, 'https://www.showtimes.com.tw/programs');
         await page.waitForSelector('text="線上訂票"', { timeout: 15000 });
         
         const ticketCount = await page.locator('text="線上訂票"').count();
         console.log(`🎬 偵測到 ${ticketCount} 部電影，開始解析...`);
 
         for (let i = 0; i < ticketCount; i++) {
-            if (i > 0 && i % 15 === 0) {
-                await page.close();
-                page = await context.newPage();
-                await page.goto('https://www.showtimes.com.tw/programs', { waitUntil: 'domcontentloaded' });
-            }
-
             try {
-                if (!page.url().includes('/programs')) {
-                    await page.goto('https://www.showtimes.com.tw/programs', { waitUntil: 'domcontentloaded' });
+                // 確保在列表頁
+                if (!page.url().endsWith('/programs')) {
+                    await gotoWithRetry(page, 'https://www.showtimes.com.tw/programs');
                 }
 
                 const btn = page.locator('text="線上訂票"').nth(i);
@@ -84,39 +119,40 @@ async function runStCrawl() {
 
                 console.log(`🎯 [${i + 1}/${ticketCount}] 處理中: ${cleanTitle}`);
                 await btn.click();
-                await page.waitForSelector('button:has-text("影城")', { timeout: 8000 });
+                
+                try {
+                    await page.waitForSelector('button:has-text("影城")', { timeout: 8000 });
+                } catch (e) {
+                    console.log(`  ⏩ 影城選單未出現，跳過此電影`);
+                    continue;
+                }
 
                 for (const cinema of stCinemas) {
                     const cBtn = page.locator(`button:has-text("${cinema.name}")`);
                     if (await cBtn.count() > 0) {
                         await cBtn.click();
-                        await page.waitForTimeout(1000); 
+                        await page.waitForTimeout(800); 
 
-                        // 🛠️ 核心解析：只抓取畫面上「未被隱藏」的場次 (即當日場次)
                         const extracted = await page.evaluate(() => {
                             const results = [];
                             const cards = Array.from(document.querySelectorAll('div, button, a'))
                                 .filter(el => {
                                     const style = window.getComputedStyle(el);
-                                    // 關鍵過濾：必須是可見的且包含場次特徵文字 |
                                     return style.display !== 'none' && 
-                                           style.visibility !== 'hidden' &&
-                                           el.innerText && el.innerText.includes('|') && 
+                                           el.innerText?.includes('|') && 
                                            /\d{2}:\d{2}/.test(el.innerText);
                                 });
 
                             cards.forEach(card => {
                                 const lines = card.innerText.trim().split('\n');
-                                let version = "數位";
-                                let time = "";
-
                                 const infoLine = lines.find(l => l.includes('|'));
-                                if (infoLine) version = infoLine.split('|')[1]?.trim() || "數位";
-
                                 const timeLine = lines.find(l => /\d{2}:\d{2}/.test(l));
-                                if (timeLine) time = timeLine.split('~')[0].trim();
-
-                                if (time) results.push({ ver: version, time: time });
+                                if (timeLine) {
+                                    results.push({ 
+                                        ver: infoLine ? infoLine.split('|')[1]?.trim() : "數位",
+                                        time: timeLine.split('~')[0].trim() 
+                                    });
+                                }
                             });
                             return results;
                         });
@@ -127,7 +163,7 @@ async function runStCrawl() {
                                     cinemaName: cinema.name, 
                                     date: todayFullStr,
                                     city: cinema.city,
-                                    location: new admin.firestore.GeoPoint(cinema.lat, cinema.lng),
+                                    location: cinema.location,
                                     movies: [] 
                                 });
                             }
@@ -139,28 +175,28 @@ async function runStCrawl() {
                                 moviesList.push(movieEntry);
                             }
 
-                            // 格式統一化 (與威秀腳本一致)
                             extracted.forEach(item => {
-                                if (!movieEntry.versions.includes(item.ver)) {
-                                    movieEntry.versions.push(item.ver);
-                                }
-                                // 避免重複場次
-                                if (!movieEntry.showtimes.find(s => s.time === item.time && s.ver === item.ver)) {
-                                    movieEntry.showtimes.push({ time: item.time, ver: item.ver });
+                                const finalVer = standardizeShowtimesVersion(item.ver);
+                                if (!movieEntry.versions.includes(finalVer)) movieEntry.versions.push(finalVer);
+                                
+                                // 避免重複紀錄相同場次
+                                const isDup = movieEntry.showtimes.some(s => s.time === item.time && s.ver === finalVer);
+                                if (!isDup) {
+                                    movieEntry.showtimes.push({ time: item.time, ver: finalVer });
                                 }
                             });
                         }
                     }
                 }
             } catch (err) {
-                console.log(`  ⏩ 跳過此電影: ${err.message}`);
+                console.log(`  ⏩ 跳過此電影索引 [${i}]: ${err.message}`);
             }
         }
 
-        // --- 🚀 同步至 Firestore ---
+        // --- 📤 同步至 Firestore ---
         console.log("\n📤 正在同步至 Firestore...");
         for (const [cinemaId, data] of cinemaDataMap) {
-            // 排序場次
+            // 對每部電影的場次進行時間排序
             data.movies.forEach(m => {
                 m.showtimes.sort((a, b) => a.time.localeCompare(b.time));
             });
@@ -176,7 +212,7 @@ async function runStCrawl() {
         console.error("🔥 嚴重失敗:", err.message);
     } finally {
         await browser.close();
-        console.log("\n🏁 秀泰任務完成");
+        console.log("\n🏁 秀泰更新任務結束");
     }
 }
 

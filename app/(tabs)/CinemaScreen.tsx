@@ -148,10 +148,18 @@ export default function CinemaScreen() {
   };
 
   const sortedCinemas = cinemas
-    .map((c) => ({
-      ...c,
-      distance: location && c.lat ? getDistance(location.latitude, location.longitude, c.lat, c.lng) : 999,
-    }))
+    .map((c) => {
+      // 💡 關鍵修正：從 c.location 中取出 lat 和 lng
+      const cinemaLat = c.location?.lat || c.lat; // 兼容舊版與新版 location 物件
+      const cinemaLng = c.location?.lng || c.lng;
+
+      return {
+        ...c,
+        distance: location && cinemaLat 
+          ? getDistance(location.latitude, location.longitude, cinemaLat, cinemaLng) 
+          : 999,
+      };
+    })
     .sort((a, b) => a.distance - b.distance);
 
   const renderHeader = () => (

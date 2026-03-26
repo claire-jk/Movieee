@@ -1,4 +1,4 @@
-//美麗華爬蟲上傳 Firestore
+// 美麗華爬蟲增強版：加入自動化版本標準化與標題清洗
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { dirname, join } from 'path';
@@ -32,18 +32,16 @@ async function runMiramarCrawl() {
     console.log(`🚀 美麗華影城更新啟動 - 目標日期：${todayStr}`);
 
     try {
-        // 1. 進入美麗華時刻表頁面
         await page.goto('https://www.miramarcinemas.tw/Timetable/Index?cinema=standard', { 
             waitUntil: 'networkidle' 
         });
 
-        // 2. 模擬點擊（觸發頁面載入特定影廳資料，比照你的 test 邏輯）
+        // 模擬點擊第一家影城（大直）
         await page.click('ul.cinema li a'); 
         await page.waitForSelector('.booking_time', { timeout: 15000 });
-        await page.waitForTimeout(2000); // 等待 DOM 渲染完全
+        await page.waitForTimeout(2000); 
 
-        // 3. 在瀏覽器環境中執行爬蟲邏輯
-        const results = await page.evaluate(() => {
+        const rawResults = await page.evaluate(() => {
             const movies = [];
             const movieContainers = document.querySelectorAll('.row');
 
@@ -51,31 +49,30 @@ async function runMiramarCrawl() {
                 const titleElement = container.querySelector('.movie_info .title');
                 if (!titleElement) return;
 
-                const title = titleElement.innerText.trim();
+                const rawTitle = titleElement.innerText.trim();
                 const showtimes = [];
                 const versionSet = new Set();
 
-                // 核心關鍵：檢查 block 是否沒有被 style="display: none" 隱藏
                 const blocks = container.querySelectorAll('.time_list_right .block');
-
                 blocks.forEach(block => {
                     const style = window.getComputedStyle(block);
-                    if (style.display === 'none') return; // 隱藏的日期場次不抓取
+                    if (style.display === 'none') return;
                     if (block.classList.contains('booking_date_area')) return;
 
                     const roomDiv = block.querySelector('.room');
                     if (!roomDiv) return;
 
-                    const versionName = roomDiv.innerText.replace(/watch_later/g, '').trim();
-                    const timeElements = block.querySelectorAll('.booking_time');
+                    // 原始版本名稱 (例如 "IMAX2D", "雷射數位")
+                    const rawVersionName = roomDiv.innerText.replace(/watch_later/g, '').trim();
                     
+                    const timeElements = block.querySelectorAll('.booking_time');
                     timeElements.forEach(t => {
                         const timeStr = t.innerText.trim();
                         if (/^\d{2}:\d{2}$/.test(timeStr)) {
-                            versionSet.add(versionName);
+                            versionSet.add(rawVersionName);
                             showtimes.push({
                                 "time": timeStr,
-                                "ver": versionName
+                                "ver": rawVersionName
                             });
                         }
                     });
@@ -83,41 +80,91 @@ async function runMiramarCrawl() {
 
                 if (showtimes.length > 0) {
                     movies.push({ 
-                        title, 
+                        title: rawTitle, 
                         versions: Array.from(versionSet),
                         showtimes 
                     });
                 }
             });
-
             return movies;
         });
 
-        if (results.length > 0) {
-            console.log(`📡 抓取成功！共有 ${results.length} 部電影，準備同步至 Firestore...`);
+        // --- 📥 資料清洗與增強匹配邏輯 ---
+        const cleanedResults = rawResults.map(movie => {
+            // 1. 標題清洗：移除 "_首日瘋特別場"、"(待定)" 等後綴，確保能跟威秀合併
+            const cleanedTitle = movie.title
+                .split('_')[0]   // 處理美麗華常用的底線分隔
+                .split('(')[0]   // 處理括號
+                .trim();
 
-            // --- 📤 同步至 Firestore ---
-            const docId = "miramar_dazhi"; // 美麗華大直影城 固定 ID
+            // 2. 版本標準化函數
+// 2. 版本標準化函數 (增強版：處理語言標籤)
+const standardizeVersion = (ver) => {
+    const v = ver.toUpperCase();
+
+    // 優先判斷特殊硬體版本
+    if (v.includes('IMAX')) return 'IMAX';
+    if (v.includes('4DX')) return '4DX';
+    if (v.includes('DOLBY')) return 'Dolby Cinema';
+    if (v.includes('3D')) return '數位 3D'; // 雖然美麗華現在較少 3D，但保留判斷
+
+    // 核心修正：如果包含「數位」、「2D」、「中文」、「英文」、「CHI」、「ENG」
+    // 通通歸類為「數位 2D」
+    if (
+        v.includes('數位') || 
+        v.includes('2D') || 
+        v.includes('中文') || 
+        v.includes('英文') || 
+        v.includes('CHI') || 
+        v.includes('ENG')
+    ) {
+        return '數位 2D';
+    }
+
+    // 若都不符合（例如預告片或其他標籤），預設給數位 2D 或回傳原始值
+    return '數位 2D'; 
+};
+
+            // 處理所有場次中的版本字串
+            const cleanedShowtimes = movie.showtimes.map(s => ({
+                ...s,
+                ver: standardizeVersion(s.ver)
+            }));
+
+            // 處理 versions 陣列並去重
+            const cleanedVersions = Array.from(new Set(movie.versions.map(v => standardizeVersion(v))));
+
+            return {
+                title: cleanedTitle,
+                originalTitle: movie.title, // 保留原始標題備查
+                versions: cleanedVersions,
+                showtimes: cleanedShowtimes
+            };
+        });
+
+        if (cleanedResults.length > 0) {
+            console.log(`📡 清洗完成！準備上傳 ${cleanedResults.length} 部電影至 Firestore...`);
+
+            const docId = "miramar_dazhi";
             const docRef = db.collection('realtime_showtimes').doc(docId);
 
             await docRef.set({
                 cinemaName: "美麗華大直影城",
                 date: todayStr,
-                movies: results,
+                movies: cleanedResults,
                 updatedAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            console.log("✅ 美麗華資料已成功更新至 Firestore！");
+            console.log("✅ 美麗華資料已成功更新（標題與版本已標準化）！");
         } else {
-            console.log("⚠️ 抓取結果為空，請檢查網頁結構是否有變或日期是否正確。");
+            console.log("⚠️ 抓取結果為空。");
         }
 
     } catch (err) {
-        console.error("🔥 發生錯誤:", err.message);
+        console.error("🔥 錯誤:", err.message);
         process.exit(1);
     } finally {
         await browser.close();
-        console.log("🏁 任務結束");
     }
 }
 

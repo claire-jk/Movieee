@@ -1,14 +1,11 @@
-//上傳cinemas及其lat lng
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-// 獲取當前檔案目錄
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 使用絕對路徑讀取金鑰，避免找不到檔案
 const serviceAccountPath = join(__dirname, 'serviceAccount.json');
 
 if (!fs.existsSync(serviceAccountPath)) {
@@ -18,12 +15,15 @@ if (!fs.existsSync(serviceAccountPath)) {
 
 const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+}
 
 const db = admin.firestore();
 
+// 影城底稿清單
 const cinemas = [
   { "id": "tp_xinyi", "vieshowId": "1", "name": "台北信義威秀影城", "city": "台北市", "lat": 25.0354, "lng": 121.5671 },
   { "id": "tp_qsquare", "vieshowId": "12", "name": "台北京站威秀影城", "city": "台北市", "lat": 25.0494, "lng": 121.5172 },
@@ -66,40 +66,48 @@ const cinemas = [
   { "id": "miramar_dazhi", "name": "美麗華大直影城", "city": "台北市", "lat": 25.0837, "lng": 121.5577 }
 ];
 
-async function uploadData() {
+async function uploadAndCleanupData() {
   const collectionRef = db.collection('cinemas');
-  console.log("📤 開始上傳影城底稿...");
+  console.log("📤 開始同步影城底稿並清理舊格式...");
 
   for (const cinema of cinemas) {
     try {
-      // 更加精確的品牌標註邏輯
       let brand = 'unknown';
-      if (cinema.vieshowId || cinema.id.includes('tp') || cinema.id.includes('ntp')) {
-        brand = 'vieshow';
-      } else if (cinema.showtimesId) {
+      if (cinema.id.startsWith('st_')) {
         brand = 'showtimes';
-      } else if (cinema.id.startsWith('broadway')) {
+      } else if (cinema.id.startsWith('broadway_')) {
         brand = 'broadway';
+      } else if (cinema.id.startsWith('miramar_')) {
+        brand = 'miramar';
+      } else {
+        brand = 'vieshow';
       }
 
       await collectionRef.doc(cinema.id).set({
         name: cinema.name,
-        city: cinema.city || "未知城市", // 防止城市漏填導致崩潰
-        lat: cinema.lat,
-        lng: cinema.lng,
+        city: cinema.city || "未知城市",
+        // 1. 建立正確的嵌套物件
+        location: {
+          lat: cinema.lat,
+          lng: cinema.lng
+        },
+        // 2. 🔥 同時刪除原本位於第一層的舊欄位
+        lat: admin.firestore.FieldValue.delete(),
+        lng: admin.firestore.FieldValue.delete(),
+        
         internalId: cinema.vieshowId || cinema.showtimesId || "", 
         brand: brand, 
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }); // 使用 merge 避免覆蓋掉現有欄位
+      }, { merge: true }); 
       
-      console.log(`✅ 已新增: ${cinema.name} (${brand})`);
+      console.log(`✅ 已修正: ${cinema.name} (${brand})`);
     } catch (error) {
       console.error(`❌ 失敗: ${cinema.name}`, error);
     }
   }
 
-  console.log("🏁 全部完成！現在去 Firebase 看看吧。");
+  console.log("\n🏁 結構轉換與清理全部完成！");
   process.exit();
 }
 
-uploadData();
+uploadAndCleanupData();

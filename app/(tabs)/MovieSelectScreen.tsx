@@ -1,8 +1,7 @@
-import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { collection, getDocs } from 'firebase/firestore';
-import { MotiView } from 'moti'; // 引入動畫庫
+import { MotiView } from 'moti';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -37,7 +36,8 @@ export default function MovieSelectScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
-    const [fontsLoaded] = useFonts({ ZenKurenaido_400Regular });
+    // 💡 狀態管理：字體由 index.tsx 載入，這裡直接設為 true
+    const fontsLoaded = true; 
     const [movies, setMovies] = useState<any[]>([]); 
     const [availableVersions, setAvailableVersions] = useState(ALL_VERSIONS);
     const [selectedMovie, setSelectedMovie] = useState<any>(null);
@@ -52,17 +52,18 @@ export default function MovieSelectScreen() {
         primary: isDark ? '#D0BCFF' : '#6750A4',
         accent: '#FF2D55',
         border: isDark ? '#2C2C2E' : '#E5E5EA',
-        glow: isDark ? 'rgba(208, 188, 255, 0.15)' : 'rgba(103, 80, 164, 0.05)',
     };
 
-    // ... (fetchMoviesFromFirebase & handleMovieChange 邏輯保持不變)
-    useEffect(() => { fetchMoviesFromFirebase(); }, []);
+    useEffect(() => { 
+        fetchMoviesFromFirebase(); 
+    }, []);
 
     const fetchMoviesFromFirebase = async () => {
         try {
             setLoading(true);
             const querySnapshot = await getDocs(collection(db, 'realtime_showtimes'));
             const movieMap = new Map();
+            
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 if (data.movies && Array.isArray(data.movies)) {
@@ -82,12 +83,13 @@ export default function MovieSelectScreen() {
                     });
                 }
             });
+
             const formattedMovies = Array.from(movieMap.values()).sort((a, b) => 
                 a.label.localeCompare(b.label, 'zh-Hant')
             );
             setMovies(formattedMovies);
         } catch (err) {
-            console.error(err);
+            console.error("Firebase Fetch Error:", err);
         } finally {
             setLoading(false);
         }
@@ -103,7 +105,8 @@ export default function MovieSelectScreen() {
         setAvailableVersions(filtered.length > 0 ? filtered : ALL_VERSIONS);
     };
 
-    if (!fontsLoaded || loading) {
+    // 💡 僅判斷 loading，不再重複判斷 fontsLoaded
+    if (loading) {
         return (
             <View style={[styles.center, { backgroundColor: theme.background }]}>
                 <ActivityIndicator size="large" color={theme.primary} />
@@ -230,7 +233,6 @@ const styles = StyleSheet.create({
         height: width * 0.8,
         borderRadius: width * 0.4,
         opacity: 0.08,
-        filter: 'blur(60px)', // 注意：某些安卓版本可能不支持 filter，可用圓形圖片代替
     },
 
     headerSection: { marginTop: 40 },
@@ -273,4 +275,4 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     submitText: { fontSize: 20, fontFamily: 'ZenKurenaido_400Regular', fontWeight: 'bold', letterSpacing: 2 },
-}); 
+});

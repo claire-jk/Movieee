@@ -1,3 +1,4 @@
+import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { collection, getDocs } from 'firebase/firestore';
@@ -5,7 +6,7 @@ import { MotiView } from 'moti';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
-    Dimensions, // 💡 引入 ScrollView
+    Dimensions,
     Platform,
     SafeAreaView,
     ScrollView,
@@ -38,6 +39,9 @@ export default function MovieSelectScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
+    // 加載字體
+    const [fontsLoaded] = useFonts({ ZenKurenaido_400Regular });
+
     const [movies, setMovies] = useState<any[]>([]); 
     const [availableVersions, setAvailableVersions] = useState(ALL_VERSIONS);
     const [selectedMovie, setSelectedMovie] = useState<any>(null);
@@ -52,6 +56,7 @@ export default function MovieSelectScreen() {
         primary: isDark ? '#D0BCFF' : '#6750A4',
         accent: '#FF2D55',
         border: isDark ? '#2C2C2E' : '#E5E5EA',
+        inputBackground: isDark ? '#2C2C2E' : '#F9F9F9',
     };
 
     useEffect(() => { 
@@ -105,7 +110,20 @@ export default function MovieSelectScreen() {
         setAvailableVersions(filtered.length > 0 ? filtered : ALL_VERSIONS);
     };
 
-    if (loading) {
+    // 💡 修正後的跳轉邏輯
+    const handleNavigate = () => {
+        if (!selectedMovie) return;
+        
+        console.log("🚀 準備跳轉，傳遞標題:", selectedMovie.label);
+        
+        // 這裡的 Key 改為 'movieTitle' 以對應 CinemaScreen 的接收端
+        navigation.navigate('CinemaDetail', { 
+            movieTitle: selectedMovie.label, 
+            version: selectedVersion,
+        });
+    };
+
+    if (loading || !fontsLoaded) {
         return (
             <View style={[styles.center, { backgroundColor: theme.background }]}>
                 <ActivityIndicator size="large" color={theme.primary} />
@@ -121,14 +139,12 @@ export default function MovieSelectScreen() {
             <View style={[styles.ambientGlow, { backgroundColor: theme.primary, top: -height * 0.1, left: -width * 0.2 }]} />
             <View style={[styles.ambientGlow, { backgroundColor: theme.accent, bottom: -height * 0.1, right: -width * 0.2, opacity: 0.03 }]} />
 
-            {/* 💡 使用 ScrollView 包裹所有內容 */}
             <ScrollView 
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
-                bounces={true}
+                keyboardShouldPersistTaps="handled"
             >
                 <View style={styles.mainContainer}>
-                    {/* 標題區塊 */}
                     <MotiView 
                         from={{ opacity: 0, translateY: -20 }}
                         animate={{ opacity: 1, translateY: 0 }}
@@ -140,8 +156,8 @@ export default function MovieSelectScreen() {
                         <Text style={[styles.subHeader, { color: theme.subText }]}>尋找下一場與大銀幕的約會</Text>
                     </MotiView>
 
-                    {/* 表單區塊 */}
                     <View style={styles.formContainer}>
+                        {/* 選擇電影 */}
                         <MotiView 
                             from={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -158,19 +174,22 @@ export default function MovieSelectScreen() {
                                 style={[styles.dropdown, { backgroundColor: theme.card, borderColor: selectedMovie ? theme.primary : theme.border }]}
                                 placeholderStyle={[styles.placeholderStyle, { color: theme.subText }]}
                                 selectedTextStyle={[styles.selectedTextStyle, { color: theme.text }]}
+                                inputSearchStyle={[styles.inputSearchStyle, { color: theme.text, backgroundColor: theme.inputBackground }]}
+                                itemTextStyle={[styles.itemTextStyle, { color: theme.text }]}
+                                containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
                                 data={movies}
                                 search
                                 labelField="label"
                                 valueField="value"
                                 placeholder="搜尋電影..."
+                                searchPlaceholder="輸入名稱查詢..."
                                 value={selectedMovie?.value}
                                 onChange={handleMovieChange}
-                                containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
-                                itemTextStyle={{ color: theme.text, fontFamily: 'ZenKurenaido_400Regular' }}
                                 activeColor={isDark ? '#3A3A3C' : '#F2F2F7'}
                             />
                         </MotiView>
 
+                        {/* 觀影版本 */}
                         <MotiView 
                             from={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -181,18 +200,18 @@ export default function MovieSelectScreen() {
                             <Dropdown
                                 style={[styles.dropdown, { backgroundColor: theme.card, borderColor: theme.border }]}
                                 selectedTextStyle={[styles.selectedTextStyle, { color: theme.primary, fontWeight: '700' }]}
+                                itemTextStyle={[styles.itemTextStyle, { color: theme.text }]}
+                                containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
                                 data={availableVersions}
                                 labelField="label"
                                 valueField="value"
                                 value={selectedVersion}
                                 onChange={(item) => setSelectedVersion(item.value)}
-                                containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
-                                itemTextStyle={{ color: theme.text, fontFamily: 'ZenKurenaido_400Regular' }}
+                                activeColor={isDark ? '#3A3A3C' : '#F2F2F7'}
                             />
                         </MotiView>
                     </View>
 
-                    {/* 按鈕區塊 */}
                     <MotiView 
                         from={{ opacity: 0, translateY: 20 }}
                         animate={{ opacity: 1, translateY: 0 }}
@@ -202,17 +221,12 @@ export default function MovieSelectScreen() {
                         <TouchableOpacity
                             activeOpacity={0.8}
                             disabled={!selectedMovie}
-                            onPress={() => navigation.navigate('CinemaDetail', { // 修正導航名稱與參數
-                                movie: selectedMovie.label, 
-                                version: selectedVersion,
-                            })}
+                            onPress={handleNavigate}
                         >
                             <View style={[
                                 styles.submitButton, 
                                 { 
                                     backgroundColor: selectedMovie ? theme.primary : (isDark ? '#1C1C1E' : '#D1D1D6'),
-                                    shadowColor: theme.primary,
-                                    shadowOpacity: selectedMovie ? 0.5 : 0,
                                 }
                             ]}>
                                 <Text style={[styles.submitText, { color: selectedMovie ? '#ffffff' : theme.subText }]}>
@@ -230,60 +244,60 @@ export default function MovieSelectScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    
-    // 💡 捲動內容容器設定
-    scrollContent: {
-        flexGrow: 1, // 💡 關鍵：這讓內容可以撐滿螢幕
-    },
+    scrollContent: { flexGrow: 1 },
     mainContainer: {
         padding: 30,
         flex: 1,
         justifyContent: 'space-between',
-        // 💡 關鍵：留出空間給 TabNavigator，否則最後一個按鈕會被遮住
-        paddingBottom: Platform.OS === 'ios' ? 120 : 100,
+        paddingBottom: Platform.OS === 'ios' ? 140 : 120, 
     },
-
     ambientGlow: {
         position: 'absolute',
         width: width * 0.8,
         height: width * 0.8,
         borderRadius: width * 0.4,
         opacity: 0.08,
+        zIndex: -1,
     },
-
-    headerSection: { marginTop: 40 },
+    headerSection: { marginTop: 20 },
     accentBar: { width: 40, height: 4, borderRadius: 2, marginBottom: 12 },
-    header: { fontSize: 52, fontFamily: 'ZenKurenaido_400Regular', letterSpacing: -1 },
+    header: { fontSize: 44, fontFamily: 'ZenKurenaido_400Regular', letterSpacing: -1 },
     subHeader: { fontSize: 18, fontFamily: 'ZenKurenaido_400Regular', opacity: 0.8 },
     loadingText: { marginTop: 20, fontFamily: 'ZenKurenaido_400Regular', letterSpacing: 4 },
-
-    formContainer: { marginTop: 60 },
-    section: { marginBottom: 40 },
-    
+    formContainer: { marginTop: 50 },
+    section: { marginBottom: 35 },
     labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
     label: { fontSize: 17, fontFamily: 'ZenKurenaido_400Regular', fontWeight: 'bold' },
     badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
     badgeText: { fontSize: 12, fontWeight: 'bold' },
-    
     dropdown: { 
-        height: 68, 
+        height: 64, 
         borderWidth: 1.5, 
-        borderRadius: 22, 
+        borderRadius: 20, 
         paddingHorizontal: 20,
     },
-    dropdownList: { borderRadius: 20, marginTop: 8, elevation: 10, borderWidth: 1 },
+    dropdownList: { 
+        borderRadius: 20, 
+        marginTop: 4, 
+        elevation: 10, 
+        borderWidth: 1,
+        overflow: 'hidden' 
+    },
     placeholderStyle: { fontSize: 16, fontFamily: 'ZenKurenaido_400Regular' },
     selectedTextStyle: { fontSize: 18, fontFamily: 'ZenKurenaido_400Regular' },
-
+    itemTextStyle: { fontSize: 16, fontFamily: 'ZenKurenaido_400Regular' },
+    inputSearchStyle: { 
+        height: 45, 
+        fontSize: 16, 
+        borderRadius: 12, 
+        fontFamily: 'ZenKurenaido_400Regular' 
+    },
     footer: { marginTop: 20 },
     submitButton: { 
         height: 70, 
         borderRadius: 25, 
         justifyContent: 'center', 
         alignItems: 'center',
-        shadowOffset: { width: 0, height: 8 },
-        shadowRadius: 15,
-        elevation: 5,
     },
     submitText: { fontSize: 20, fontFamily: 'ZenKurenaido_400Regular', fontWeight: 'bold', letterSpacing: 2 },
 });

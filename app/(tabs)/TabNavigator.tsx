@@ -15,9 +15,10 @@ import MovieBonusScreen from './MovieBonusScreen';
 import MovieSelectScreen from './MovieSelectScreen';
 import TicketRecordScreen from './TicketRecordScreen';
 
+// 🛠️ 修正點：將 movie 改為 movieTitle 以匹配 CinemaScreen 的接收端
 export type RootStackParamList = {
   MovieSelect: undefined;
-  CinemaDetail: { movie: string; version: string };
+  CinemaDetail: { movieTitle: string; version: string }; 
 };
 
 export type RootTabParamList = {
@@ -45,7 +46,7 @@ function TabIcon({ icon: Icon, label, focused, color }: any) {
     <MotiView
       animate={{
         scale: focused ? 1.1 : 1,
-        translateY: focused ? 0 : 2, // 稍微上下晃動增加動感
+        translateY: focused ? 0 : 2, 
       }}
       transition={{ type: 'spring', damping: 15 }}
       style={styles.iconWrapper}
@@ -71,8 +72,8 @@ function TabIcon({ icon: Icon, label, focused, color }: any) {
           {
             color,
             opacity: focused ? 1 : 0.7,
-            // 如果你還沒加載 ZenKurenaido 字體，請先註解掉下面這行避免報錯
-            // fontFamily: 'ZenKurenaido_400Regular', 
+            // 如果你已經加載 ZenKurenaido 字體，可以取消註解
+            fontFamily: 'ZenKurenaido_400Regular', 
           },
         ]}
       >
@@ -85,18 +86,16 @@ function TabIcon({ icon: Icon, label, focused, color }: any) {
 export default function TabNavigator() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const insets = useSafeAreaInsets(); // 獲取系統安全邊距
+  const insets = useSafeAreaInsets(); 
 
   const theme = {
     active: '#FF6B6B',
     inactive: isDark ? '#8E8E93' : '#7A7A7A',
   };
 
-  // 動態計算底部間距
-  // iOS 有小白條時 insets.bottom 約 34，Android 有按鈕時為 0
   const bottomMargin = Platform.OS === 'ios' 
     ? (insets.bottom > 0 ? insets.bottom : 20) 
-    : 16; // Android 浮起的高度
+    : 16; 
 
   return (
     <Tab.Navigator
@@ -105,7 +104,7 @@ export default function TabNavigator() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: bottomMargin, // 自動適應 iOS 小白條或 Android 按鈕
+          bottom: bottomMargin,
           left: 20,
           right: 20,
           height: 70,
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 10, // 稍微往下推一點點讓圖標居中
+    paddingTop: 10,
   },
   label: {
     fontSize: 11,
@@ -204,6 +203,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: 'rgba(255,107,107,0.15)',
-    top: 5, // 調整背景圈圈的位置
+    top: 5,
   },
 });

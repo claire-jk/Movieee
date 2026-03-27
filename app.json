@@ -22,7 +22,6 @@
       "package": "com.clairejk.Movie"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -40,11 +39,9 @@
       "expo-web-browser"
     ],
     "experiments": {
-      "typedRoutes": true,
       "reactCompiler": true
     },
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "3a8070d9-6a8b-43bb-8902-81aefb654989"
       }

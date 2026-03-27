@@ -5,8 +5,10 @@ import { CalendarClock, Gift, Home, Ticket } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import React from 'react';
 import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
+// 匯入 Safe Area Hook 處理 iOS/Android 底部間距
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// screens
+// 假設你的 Screen 檔案路徑如下，請根據實際情況調整
 import CinemaScheduleScreen from './CinemaScheduleScreen';
 import CinemaScreen from './CinemaScreen';
 import MovieBonusScreen from './MovieBonusScreen';
@@ -37,39 +39,40 @@ function HomeStack() {
   );
 }
 
-// 🎨 Tab Icon
+// 🎨 自定義 Tab Icon 組件
 function TabIcon({ icon: Icon, label, focused, color }: any) {
   return (
     <MotiView
       animate={{
         scale: focused ? 1.1 : 1,
-        translateY: focused ? 8 : 10, // 🔥 再往下
+        translateY: focused ? 0 : 2, // 稍微上下晃動增加動感
       }}
       transition={{ type: 'spring', damping: 15 }}
       style={styles.iconWrapper}
     >
-      {/* Active 背景 */}
+      {/* Active 背景圈圈 */}
       {focused && (
         <MotiView
-          from={{ opacity: 0, scale: 0.85, translateY: 2 }}
-          animate={{ opacity: 1, scale: 1, translateY: 2 }} // 🔥 同步下移
+          from={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
           style={styles.activeBg}
         />
       )}
 
-      {/* icon */}
-      <View style={{ marginTop: 14 }}>
+      {/* Icon 本體 */}
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Icon color={color} size={22} strokeWidth={focused ? 2.4 : 2} />
       </View>
 
-      {/* label */}
+      {/* Label 文字 */}
       <Text
         style={[
           styles.label,
           {
             color,
-            opacity: focused ? 1 : 0.8,
-            fontFamily: 'ZenKurenaido_400Regular',
+            opacity: focused ? 1 : 0.7,
+            // 如果你還沒加載 ZenKurenaido 字體，請先註解掉下面這行避免報錯
+            // fontFamily: 'ZenKurenaido_400Regular', 
           },
         ]}
       >
@@ -82,39 +85,40 @@ function TabIcon({ icon: Icon, label, focused, color }: any) {
 export default function TabNavigator() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const insets = useSafeAreaInsets(); // 獲取系統安全邊距
 
   const theme = {
     active: '#FF6B6B',
     inactive: isDark ? '#8E8E93' : '#7A7A7A',
   };
 
+  // 動態計算底部間距
+  // iOS 有小白條時 insets.bottom 約 34，Android 有按鈕時為 0
+  const bottomMargin = Platform.OS === 'ios' 
+    ? (insets.bottom > 0 ? insets.bottom : 20) 
+    : 16; // Android 浮起的高度
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-
         tabBarStyle: {
           position: 'absolute',
-
-          // 🔥 再往下（最重要）
-          bottom: Platform.OS === 'ios' ? 6 : 4,
-
+          bottom: bottomMargin, // 自動適應 iOS 小白條或 Android 按鈕
           left: 20,
           right: 20,
-          height: 74,
-          borderRadius: 32,
+          height: 70,
+          borderRadius: 35,
           borderTopWidth: 0,
           backgroundColor: 'transparent',
-
           elevation: 0,
           shadowOpacity: 0,
         },
-
         tabBarBackground: () => (
           <BlurView
             tint={isDark ? 'dark' : 'light'}
-            intensity={90}
+            intensity={80}
             style={StyleSheet.absoluteFill}
           />
         ),
@@ -187,21 +191,19 @@ const styles = StyleSheet.create({
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 65,
-    height: 65,
+    paddingTop: 10, // 稍微往下推一點點讓圖標居中
   },
-
   label: {
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 4,
-    fontWeight: '400',
+    fontWeight: '600',
   },
-
   activeBg: {
     position: 'absolute',
-    width: 58,
-    height: 58,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,107,107,0.12)',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255,107,107,0.15)',
+    top: 5, // 調整背景圈圈的位置
   },
 });

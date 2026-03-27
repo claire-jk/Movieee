@@ -5,8 +5,10 @@ import { MotiView } from 'moti';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
-    Dimensions,
+    Dimensions, // 💡 引入 ScrollView
+    Platform,
     SafeAreaView,
+    ScrollView,
     StatusBar,
     StyleSheet,
     Text,
@@ -36,8 +38,6 @@ export default function MovieSelectScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
-    // 💡 狀態管理：字體由 index.tsx 載入，這裡直接設為 true
-    const fontsLoaded = true; 
     const [movies, setMovies] = useState<any[]>([]); 
     const [availableVersions, setAvailableVersions] = useState(ALL_VERSIONS);
     const [selectedMovie, setSelectedMovie] = useState<any>(null);
@@ -105,7 +105,6 @@ export default function MovieSelectScreen() {
         setAvailableVersions(filtered.length > 0 ? filtered : ALL_VERSIONS);
     };
 
-    // 💡 僅判斷 loading，不再重複判斷 fontsLoaded
     if (loading) {
         return (
             <View style={[styles.center, { backgroundColor: theme.background }]}>
@@ -119,114 +118,131 @@ export default function MovieSelectScreen() {
         <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
             
-            {/* 背景裝飾：營造影院氛圍的微光 */}
             <View style={[styles.ambientGlow, { backgroundColor: theme.primary, top: -height * 0.1, left: -width * 0.2 }]} />
             <View style={[styles.ambientGlow, { backgroundColor: theme.accent, bottom: -height * 0.1, right: -width * 0.2, opacity: 0.03 }]} />
 
-            <View style={styles.content}>
-                {/* 標題區塊 */}
-                <MotiView 
-                    from={{ opacity: 0, translateY: -20 }}
-                    animate={{ opacity: 1, translateY: 0 }}
-                    transition={{ type: 'timing', duration: 1000 }}
-                    style={styles.headerSection}
-                >
-                    <Text style={[styles.header, { color: theme.text }]}>MovieGoer</Text>
-                    <View style={[styles.accentBar, { backgroundColor: theme.primary }]} />
-                    <Text style={[styles.subHeader, { color: theme.subText }]}>尋找下一場與大銀幕的約會</Text>
-                </MotiView>
-
-                {/* 表單區塊 */}
-                <View style={styles.formContainer}>
+            {/* 💡 使用 ScrollView 包裹所有內容 */}
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                bounces={true}
+            >
+                <View style={styles.mainContainer}>
+                    {/* 標題區塊 */}
                     <MotiView 
-                        from={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 200 }}
-                        style={styles.section}
+                        from={{ opacity: 0, translateY: -20 }}
+                        animate={{ opacity: 1, translateY: 0 }}
+                        transition={{ type: 'timing', duration: 1000 }}
+                        style={styles.headerSection}
                     >
-                        <View style={styles.labelRow}>
-                            <Text style={[styles.label, { color: theme.text }]}>🎬 選擇電影</Text>
-                            <View style={[styles.badge, { backgroundColor: isDark ? '#2C2C2E' : '#E5E5EA' }]}>
-                                <Text style={[styles.badgeText, { color: theme.primary }]}>{movies.length} 部熱映中</Text>
-                            </View>
-                        </View>
-                        <Dropdown
-                            style={[styles.dropdown, { backgroundColor: theme.card, borderColor: selectedMovie ? theme.primary : theme.border }]}
-                            placeholderStyle={[styles.placeholderStyle, { color: theme.subText }]}
-                            selectedTextStyle={[styles.selectedTextStyle, { color: theme.text }]}
-                            data={movies}
-                            search
-                            labelField="label"
-                            valueField="value"
-                            placeholder="搜尋電影..."
-                            value={selectedMovie?.value}
-                            onChange={handleMovieChange}
-                            containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
-                            itemTextStyle={{ color: theme.text, fontFamily: 'ZenKurenaido_400Regular' }}
-                            activeColor={isDark ? '#3A3A3C' : '#F2F2F7'}
-                        />
+                        <Text style={[styles.header, { color: theme.text }]}>MovieGoer</Text>
+                        <View style={[styles.accentBar, { backgroundColor: theme.primary }]} />
+                        <Text style={[styles.subHeader, { color: theme.subText }]}>尋找下一場與大銀幕的約會</Text>
                     </MotiView>
 
+                    {/* 表單區塊 */}
+                    <View style={styles.formContainer}>
+                        <MotiView 
+                            from={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 200 }}
+                            style={styles.section}
+                        >
+                            <View style={styles.labelRow}>
+                                <Text style={[styles.label, { color: theme.text }]}>🎬 選擇電影</Text>
+                                <View style={[styles.badge, { backgroundColor: isDark ? '#2C2C2E' : '#E5E5EA' }]}>
+                                    <Text style={[styles.badgeText, { color: theme.primary }]}>{movies.length} 部熱映中</Text>
+                                </View>
+                            </View>
+                            <Dropdown
+                                style={[styles.dropdown, { backgroundColor: theme.card, borderColor: selectedMovie ? theme.primary : theme.border }]}
+                                placeholderStyle={[styles.placeholderStyle, { color: theme.subText }]}
+                                selectedTextStyle={[styles.selectedTextStyle, { color: theme.text }]}
+                                data={movies}
+                                search
+                                labelField="label"
+                                valueField="value"
+                                placeholder="搜尋電影..."
+                                value={selectedMovie?.value}
+                                onChange={handleMovieChange}
+                                containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
+                                itemTextStyle={{ color: theme.text, fontFamily: 'ZenKurenaido_400Regular' }}
+                                activeColor={isDark ? '#3A3A3C' : '#F2F2F7'}
+                            />
+                        </MotiView>
+
+                        <MotiView 
+                            from={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 400 }}
+                            style={styles.section}
+                        >
+                            <Text style={[styles.label, { color: theme.text, marginBottom: 12 }]}>🎥 觀影版本</Text>
+                            <Dropdown
+                                style={[styles.dropdown, { backgroundColor: theme.card, borderColor: theme.border }]}
+                                selectedTextStyle={[styles.selectedTextStyle, { color: theme.primary, fontWeight: '700' }]}
+                                data={availableVersions}
+                                labelField="label"
+                                valueField="value"
+                                value={selectedVersion}
+                                onChange={(item) => setSelectedVersion(item.value)}
+                                containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
+                                itemTextStyle={{ color: theme.text, fontFamily: 'ZenKurenaido_400Regular' }}
+                            />
+                        </MotiView>
+                    </View>
+
+                    {/* 按鈕區塊 */}
                     <MotiView 
-                        from={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 400 }}
-                        style={styles.section}
+                        from={{ opacity: 0, translateY: 20 }}
+                        animate={{ opacity: 1, translateY: 0 }}
+                        transition={{ delay: 600 }}
+                        style={styles.footer}
                     >
-                        <Text style={[styles.label, { color: theme.text, marginBottom: 12 }]}>🎥 觀影版本</Text>
-                        <Dropdown
-                            style={[styles.dropdown, { backgroundColor: theme.card, borderColor: theme.border }]}
-                            selectedTextStyle={[styles.selectedTextStyle, { color: theme.primary, fontWeight: '700' }]}
-                            data={availableVersions}
-                            labelField="label"
-                            valueField="value"
-                            value={selectedVersion}
-                            onChange={(item) => setSelectedVersion(item.value)}
-                            containerStyle={[styles.dropdownList, { backgroundColor: theme.card, borderColor: theme.border }]}
-                            itemTextStyle={{ color: theme.text, fontFamily: 'ZenKurenaido_400Regular' }}
-                        />
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            disabled={!selectedMovie}
+                            onPress={() => navigation.navigate('CinemaDetail', { // 修正導航名稱與參數
+                                movie: selectedMovie.label, 
+                                version: selectedVersion,
+                            })}
+                        >
+                            <View style={[
+                                styles.submitButton, 
+                                { 
+                                    backgroundColor: selectedMovie ? theme.primary : (isDark ? '#1C1C1E' : '#D1D1D6'),
+                                    shadowColor: theme.primary,
+                                    shadowOpacity: selectedMovie ? 0.5 : 0,
+                                }
+                            ]}>
+                                <Text style={[styles.submitText, { color: selectedMovie ? '#ffffff' : theme.subText }]}>
+                                    探索場次
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
                     </MotiView>
                 </View>
-
-                {/* 按鈕區塊 */}
-                <MotiView 
-                    from={{ opacity: 0, translateY: 20 }}
-                    animate={{ opacity: 1, translateY: 0 }}
-                    transition={{ delay: 600 }}
-                    style={styles.footer}
-                >
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        disabled={!selectedMovie}
-                        onPress={() => navigation.navigate('CinemaScreen' as any, {
-                            movieTitle: selectedMovie.label, 
-                            version: selectedVersion,
-                        })}
-                    >
-                        <View style={[
-                            styles.submitButton, 
-                            { 
-                                backgroundColor: selectedMovie ? theme.primary : (isDark ? '#1C1C1E' : '#D1D1D6'),
-                                shadowColor: theme.primary,
-                                shadowOpacity: selectedMovie ? 0.5 : 0,
-                            }
-                        ]}>
-                            <Text style={[styles.submitText, { color: selectedMovie ? '#ffffff' : theme.subText }]}>
-                                探索場次
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                </MotiView>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    content: { padding: 30, flex: 1, justifyContent: 'space-between', zIndex: 1 },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     
+    // 💡 捲動內容容器設定
+    scrollContent: {
+        flexGrow: 1, // 💡 關鍵：這讓內容可以撐滿螢幕
+    },
+    mainContainer: {
+        padding: 30,
+        flex: 1,
+        justifyContent: 'space-between',
+        // 💡 關鍵：留出空間給 TabNavigator，否則最後一個按鈕會被遮住
+        paddingBottom: Platform.OS === 'ios' ? 120 : 100,
+    },
+
     ambientGlow: {
         position: 'absolute',
         width: width * 0.8,
@@ -241,7 +257,7 @@ const styles = StyleSheet.create({
     subHeader: { fontSize: 18, fontFamily: 'ZenKurenaido_400Regular', opacity: 0.8 },
     loadingText: { marginTop: 20, fontFamily: 'ZenKurenaido_400Regular', letterSpacing: 4 },
 
-    formContainer: { flex: 1, marginTop: 60 },
+    formContainer: { marginTop: 60 },
     section: { marginBottom: 40 },
     
     labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
@@ -254,17 +270,12 @@ const styles = StyleSheet.create({
         borderWidth: 1.5, 
         borderRadius: 22, 
         paddingHorizontal: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 2,
     },
     dropdownList: { borderRadius: 20, marginTop: 8, elevation: 10, borderWidth: 1 },
     placeholderStyle: { fontSize: 16, fontFamily: 'ZenKurenaido_400Regular' },
     selectedTextStyle: { fontSize: 18, fontFamily: 'ZenKurenaido_400Regular' },
 
-    footer: { marginBottom: 20 },
+    footer: { marginTop: 20 },
     submitButton: { 
         height: 70, 
         borderRadius: 25, 

@@ -1,17 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { CalendarClock, Gift, Home, Ticket } from 'lucide-react-native'; // 引入 Ticket 圖示
+import { BlurView } from 'expo-blur';
+import { CalendarClock, Gift, Home, Ticket } from 'lucide-react-native';
+import { MotiView } from 'moti';
 import React from 'react';
-import { Platform, useColorScheme } from 'react-native';
+import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
-// 匯入各個分頁組件
+// screens
 import CinemaScheduleScreen from './CinemaScheduleScreen';
 import CinemaScreen from './CinemaScreen';
 import MovieBonusScreen from './MovieBonusScreen';
 import MovieSelectScreen from './MovieSelectScreen';
 import TicketRecordScreen from './TicketRecordScreen';
 
-// 定義導航參數類型
 export type RootStackParamList = {
   MovieSelect: undefined;
   CinemaDetail: { movie: string; version: string };
@@ -21,7 +22,7 @@ export type RootTabParamList = {
   MainStack: undefined;
   Bonus: undefined;
   Schedules: undefined;
-  TicketRecord: undefined; // 1. 在這裡新增類型定義
+  TicketRecord: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -36,67 +37,171 @@ function HomeStack() {
   );
 }
 
+// 🎨 Tab Icon
+function TabIcon({ icon: Icon, label, focused, color }: any) {
+  return (
+    <MotiView
+      animate={{
+        scale: focused ? 1.1 : 1,
+        translateY: focused ? 8 : 10, // 🔥 再往下
+      }}
+      transition={{ type: 'spring', damping: 15 }}
+      style={styles.iconWrapper}
+    >
+      {/* Active 背景 */}
+      {focused && (
+        <MotiView
+          from={{ opacity: 0, scale: 0.85, translateY: 2 }}
+          animate={{ opacity: 1, scale: 1, translateY: 2 }} // 🔥 同步下移
+          style={styles.activeBg}
+        />
+      )}
+
+      {/* icon */}
+      <View style={{ marginTop: 14 }}>
+        <Icon color={color} size={22} strokeWidth={focused ? 2.4 : 2} />
+      </View>
+
+      {/* label */}
+      <Text
+        style={[
+          styles.label,
+          {
+            color,
+            opacity: focused ? 1 : 0.8,
+            fontFamily: 'ZenKurenaido_400Regular',
+          },
+        ]}
+      >
+        {label}
+      </Text>
+    </MotiView>
+  );
+}
+
 export default function TabNavigator() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  const theme = {
+    active: '#FF6B6B',
+    inactive: isDark ? '#8E8E93' : '#7A7A7A',
+  };
+
   return (
     <Tab.Navigator
-      initialRouteName="MainStack"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: isDark ? '#BB86FC' : '#6200EE',
-        tabBarInactiveTintColor: isDark ? '#666' : '#999',
-        tabBarLabelStyle: { fontSize: 12, fontWeight: '600', marginBottom: 8 },
+        tabBarShowLabel: false,
+
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 88 : 75,
-          paddingTop: 10,
-          backgroundColor: isDark ? '#1F1F1F' : '#FFFFFF',
+          position: 'absolute',
+
+          // 🔥 再往下（最重要）
+          bottom: Platform.OS === 'ios' ? 6 : 4,
+
+          left: 20,
+          right: 20,
+          height: 74,
+          borderRadius: 32,
           borderTopWidth: 0,
-          elevation: 20,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
+          backgroundColor: 'transparent',
+
+          elevation: 0,
+          shadowOpacity: 0,
         },
+
+        tabBarBackground: () => (
+          <BlurView
+            tint={isDark ? 'dark' : 'light'}
+            intensity={90}
+            style={StyleSheet.absoluteFill}
+          />
+        ),
       }}
     >
-      <Tab.Screen 
-        name="MainStack" 
-        component={HomeStack} 
+      <Tab.Screen
+        name="MainStack"
+        component={HomeStack}
         options={{
-          title: '找電影',
-          tabBarIcon: ({ color }) => <Home color={color} size={24} strokeWidth={2.5} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              icon={Home}
+              label="找電影"
+              focused={focused}
+              color={focused ? theme.active : theme.inactive}
+            />
+          ),
         }}
       />
 
-      <Tab.Screen 
-        name="Schedules" 
-        component={CinemaScheduleScreen} 
+      <Tab.Screen
+        name="Schedules"
+        component={CinemaScheduleScreen}
         options={{
-          title: '影城規律',
-          tabBarIcon: ({ color }) => <CalendarClock color={color} size={24} strokeWidth={2.5} />,
-        }}
-      />
-      
-      <Tab.Screen 
-        name="Bonus" 
-        component={MovieBonusScreen} 
-        options={{
-          title: '特典情報',
-          tabBarIcon: ({ color }) => <Gift color={color} size={24} strokeWidth={2.5} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              icon={CalendarClock}
+              label="影城"
+              focused={focused}
+              color={focused ? theme.active : theme.inactive}
+            />
+          ),
         }}
       />
 
-      {/* 2. 修改這裡的 name 為 TicketRecord，避免重複 */}
-      <Tab.Screen 
-        name="TicketRecord" 
-        component={TicketRecordScreen} 
+      <Tab.Screen
+        name="Bonus"
+        component={MovieBonusScreen}
         options={{
-          title: '電影票蒐藏',
-          tabBarIcon: ({ color }) => <Ticket color={color} size={24} strokeWidth={2.5} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              icon={Gift}
+              label="特典"
+              focused={focused}
+              color={focused ? theme.active : theme.inactive}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="TicketRecord"
+        component={TicketRecordScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              icon={Ticket}
+              label="收藏"
+              focused={focused}
+              color={focused ? theme.active : theme.inactive}
+            />
+          ),
         }}
       />
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 65,
+    height: 65,
+  },
+
+  label: {
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '400',
+  },
+
+  activeBg: {
+    position: 'absolute',
+    width: 58,
+    height: 58,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,107,107,0.12)',
+  },
+});

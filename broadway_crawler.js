@@ -63,8 +63,7 @@ async function runBroadwayCrawl() {
                             const versionName = ver.SubName2 || "數位";
 
                             (ver.subtimedata || []).forEach(t => {
-                                // 🛠️ 修正 2：完全依照測試腳本的比對邏輯
-                                // 取得 PlayDate 並將斜線換成橫線
+
                                 const playDate = t["PlayDate"] ? t["PlayDate"].split(' ')[0].replace(/\//g, '-') : today;
 
                                 if (playDate === today) {
@@ -99,7 +98,7 @@ async function runBroadwayCrawl() {
             }
         }
 
-        // --- 📤 同步至 Firestore ---
+        // --- 同步至 Firestore ---
         if (cinemaDataMap.size > 0) {
             console.log("\n📤 正在同步至 Firestore...");
             const batch = db.batch();

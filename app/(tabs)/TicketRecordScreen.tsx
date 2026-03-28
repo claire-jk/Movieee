@@ -1,3 +1,4 @@
+//電影票根回憶錄
 import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
 import * as ImagePicker from 'expo-image-picker';
 import {
@@ -138,7 +139,7 @@ export default function TicketRecordScreen() {
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: Colors.bg }]} edges={['top']}>
             
-            {/* 🆕 動態 Toast */}
+            {/* 動態 Toast */}
             <AnimatePresence>
                 {toast.visible && (
                     <MotiView

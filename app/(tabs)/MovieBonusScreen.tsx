@@ -1,3 +1,4 @@
+//電影特典庫存回報頁面
 import { ZenKurenaido_400Regular, useFonts } from '@expo-google-fonts/zen-kurenaido';
 import { arrayUnion, collection, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
 import { AnimatePresence, MotiView } from 'moti';
@@ -30,7 +31,6 @@ const getStatusColor = (state: string) => {
     }
 };
 
-// 🎥 特典卡片組件 (含微光掃過動畫)
 const BonusCard = React.memo(({ item, index, theme, onReport, onImagePress }: any) => {
     return (
         <MotiView
@@ -45,7 +45,7 @@ const BonusCard = React.memo(({ item, index, theme, onReport, onImagePress }: an
                 }
             ]}
         >
-            {/* 💡 微光掃過動畫層 */}
+            {/* 微光掃過動畫層 */}
             <MotiView
                 from={{ translateX: -width }}
                 animate={{ translateX: width }}

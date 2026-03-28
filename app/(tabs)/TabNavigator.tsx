@@ -5,17 +5,14 @@ import { CalendarClock, Gift, Home, Ticket } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import React from 'react';
 import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
-// 匯入 Safe Area Hook 處理 iOS/Android 底部間距
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// 假設你的 Screen 檔案路徑如下，請根據實際情況調整
 import CinemaScheduleScreen from './CinemaScheduleScreen';
 import CinemaScreen from './CinemaScreen';
 import MovieBonusScreen from './MovieBonusScreen';
 import MovieSelectScreen from './MovieSelectScreen';
 import TicketRecordScreen from './TicketRecordScreen';
 
-// 🛠️ 修正點：將 movie 改為 movieTitle 以匹配 CinemaScreen 的接收端
 export type RootStackParamList = {
   MovieSelect: undefined;
   CinemaDetail: { movieTitle: string; version: string }; 
@@ -40,7 +37,6 @@ function HomeStack() {
   );
 }
 
-// 🎨 自定義 Tab Icon 組件
 function TabIcon({ icon: Icon, label, focused, color }: any) {
   return (
     <MotiView
@@ -72,7 +68,6 @@ function TabIcon({ icon: Icon, label, focused, color }: any) {
           {
             color,
             opacity: focused ? 1 : 0.7,
-            // 如果你已經加載 ZenKurenaido 字體，可以取消註解
             fontFamily: 'ZenKurenaido_400Regular', 
           },
         ]}

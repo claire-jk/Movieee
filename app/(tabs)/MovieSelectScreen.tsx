@@ -1,3 +1,4 @@
+//電影選擇頁面
 import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -39,7 +40,6 @@ export default function MovieSelectScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
-    // 加載字體
     const [fontsLoaded] = useFonts({ ZenKurenaido_400Regular });
 
     const [movies, setMovies] = useState<any[]>([]); 
@@ -110,13 +110,11 @@ export default function MovieSelectScreen() {
         setAvailableVersions(filtered.length > 0 ? filtered : ALL_VERSIONS);
     };
 
-    // 💡 修正後的跳轉邏輯
     const handleNavigate = () => {
         if (!selectedMovie) return;
         
         console.log("🚀 準備跳轉，傳遞標題:", selectedMovie.label);
         
-        // 這裡的 Key 改為 'movieTitle' 以對應 CinemaScreen 的接收端
         navigation.navigate('CinemaDetail', { 
             movieTitle: selectedMovie.label, 
             version: selectedVersion,

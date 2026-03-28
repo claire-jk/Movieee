@@ -86,7 +86,6 @@ async function uploadAndCleanupData() {
       await collectionRef.doc(cinema.id).set({
         name: cinema.name,
         city: cinema.city || "未知城市",
-        // 1. 建立正確的嵌套物件
         location: {
           lat: cinema.lat,
           lng: cinema.lng
@@ -101,7 +100,7 @@ async function uploadAndCleanupData() {
           "Dolby Cinema":cinema["Dolby Cinema"] || null,
           "LIVE":cinema["LIVE"] || null
         },
-        // 2. 🔥 同時刪除原本位於第一層的舊欄位
+
         lat: admin.firestore.FieldValue.delete(),
         lng: admin.firestore.FieldValue.delete(),
         

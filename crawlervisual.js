@@ -1,3 +1,4 @@
+// 威秀影城爬蟲
 import admin from 'firebase-admin';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
@@ -12,12 +13,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const serviceAccountPath = join(__dirname, 'serviceAccount.json');
 
-// 🔥 1. 取得台灣當天日期 (用於過濾 API 與 寫入資料庫)
 const now = new Date();
 const todayDateStr = `${String(now.getMonth() + 1).padStart(2, '0')}月${String(now.getDate()).padStart(2, '0')}日`;
 const todayFullStr = now.toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' });
 
-// 🔥 2. Firebase 初始化
 if (!admin.apps.length) {
     const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
     admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
@@ -179,7 +178,7 @@ async function crawl() {
                 finalData = mergeMovieData(uiRaw);
             }
 
-            // 🔥 上傳 Firebase
+            // 上傳 Firebase
             if (finalData.length > 0) {
                 await db.collection('realtime_showtimes').doc(cinema.id).set({
                     cinemaName: cinema.name,

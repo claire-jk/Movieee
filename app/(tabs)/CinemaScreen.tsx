@@ -1,3 +1,4 @@
+//戲院列表頁面
 import { useFonts, ZenKurenaido_400Regular } from '@expo-google-fonts/zen-kurenaido';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'; // 修正：改用 React Navigation
@@ -19,7 +20,6 @@ import {
   View,
 } from 'react-native';
 
-// --- Firebase ---
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import { RootStackParamList } from './TabNavigator'; // 匯入型別
@@ -27,14 +27,14 @@ import { RootStackParamList } from './TabNavigator'; // 匯入型別
 const { width, height } = Dimensions.get('window');
 
 type TicketType = '全票' | '學生票' | '愛心票';
-// 定義 Route 型別
+
 type CinemaScreenRouteProp = RouteProp<RootStackParamList, 'CinemaDetail'>;
 
 export default function CinemaScreen() {
   const navigation = useNavigation();
   const route = useRoute<CinemaScreenRouteProp>();
   
-  // 💡 從 React Navigation 的 route.params 獲取資料
+
   const { movieTitle, version: versionParam = '2D' } = route.params || {};
 
   const [fontsLoaded] = useFonts({ ZenKurenaido: ZenKurenaido_400Regular });
@@ -60,7 +60,6 @@ export default function CinemaScreen() {
     accent: '#FF375F',
   };
 
-  // 1. 初始化資料
   useEffect(() => {
     prepareData();
   }, [movieTitle, versionParam]);
@@ -78,7 +77,7 @@ export default function CinemaScreen() {
     setRefreshing(false);
   }, [movieTitle, versionParam]);
 
-  // 2. 取得經緯度
+  // 取得經緯度
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -90,7 +89,7 @@ export default function CinemaScreen() {
     }
   };
 
-  // 3. 標準化電影版本名稱
+  // 標準化電影版本名稱
   const normalizeVersion = (ver: string) => {
     if (!ver) return '數位 2D';
     const v = ver.toUpperCase();
@@ -103,7 +102,7 @@ export default function CinemaScreen() {
     return '數位 2D';
   };
 
-  // 4. 從 Firebase 抓取並過濾戲院場次
+  // 從 Firebase 抓取並過濾戲院場次
   const fetchCinemas = async () => {
     console.log("--- 偵錯資訊 ---");
     console.log("當前收到的電影標題:", movieTitle);
@@ -159,7 +158,7 @@ export default function CinemaScreen() {
     }
   };
 
-  // 5. 計算距離與票價
+  // 計算距離與票價
   const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -307,7 +306,6 @@ export default function CinemaScreen() {
   );
 }
 
-// Styles 保持不變...
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },

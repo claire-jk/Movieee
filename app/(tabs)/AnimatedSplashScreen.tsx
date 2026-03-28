@@ -1,3 +1,4 @@
+//進入畫面動畫
 import { Ionicons } from '@expo/vector-icons';
 import { MotiText, MotiView } from 'moti';
 import React, { useEffect, useState } from 'react';
@@ -24,12 +25,11 @@ export default function AnimatedSplashScreen({ onFinish, appIsReady }: Props) {
     text: isDark ? '#FFFFFF' : '#2D3436',
   };
 
-  // ✅ 控制離場動畫
   useEffect(() => {
     if (appIsReady) {
       const timer = setTimeout(() => {
         setExit(true);
-        setTimeout(onFinish, 600); // 等動畫結束再關
+        setTimeout(onFinish, 600);
       }, 1200);
       return () => clearTimeout(timer);
     }
@@ -42,11 +42,11 @@ export default function AnimatedSplashScreen({ onFinish, appIsReady }: Props) {
       animate={{ opacity: exit ? 0 : 1 }}
       transition={{ duration: 500 }}
     >
-      {/* 🎨 漸層背景（用兩層做假漸層） */}
+      {/* 背景層 */}
       <View style={[styles.bgLayer, { backgroundColor: theme.bg1 }]} />
       <View style={[styles.bgOverlay, { backgroundColor: theme.bg2 }]} />
 
-      {/* 🌟 光暈擴散 */}
+      {/* 光暈擴散 */}
       <MotiView
         from={{ scale: 0.6, opacity: 0.3 }}
         animate={{ scale: 1.8, opacity: 0 }}
@@ -58,7 +58,7 @@ export default function AnimatedSplashScreen({ onFinish, appIsReady }: Props) {
         style={[styles.glow, { backgroundColor: theme.glow }]}
       />
 
-      {/* 🎬 LOGO */}
+      {/* LOGO */}
       <MotiView
         from={{ opacity: 0, scale: 0.5, rotate: '0deg' }}
         animate={{
@@ -87,7 +87,7 @@ export default function AnimatedSplashScreen({ onFinish, appIsReady }: Props) {
         </MotiView>
       </MotiView>
 
-      {/* ✍️ 文字動畫 */}
+      {/* 文字動畫 */}
       <MotiText
         from={{ opacity: 0, translateY: 20 }}
         animate={{
@@ -104,7 +104,7 @@ export default function AnimatedSplashScreen({ onFinish, appIsReady }: Props) {
         Moviegoer
       </MotiText>
 
-      {/* ✨ 副標 */}
+      {/* 副標 */}
       <MotiText
         from={{ opacity: 0 }}
         animate={{ opacity: exit ? 0 : 0.6 }}

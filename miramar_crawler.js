@@ -101,7 +101,7 @@ async function runMiramarCrawl() {
             return movies;
         });
 
-        // --- 📥 資料清洗、標準化與合併 (重要修正) ---
+        // --- 資料清洗、標準化與合併 (重要修正) ---
         const cinemaMoviesMap = new Map();
 
         rawResults.forEach(m => {
@@ -124,7 +124,7 @@ async function runMiramarCrawl() {
                     movieEntry.versions.push(finalVer);
                 }
 
-                // 檢查重複 (避免不同原始標題合併後產生重複場次)
+
                 const isDup = movieEntry.showtimes.some(st => st.time === s.time && st.ver === finalVer);
                 if (!isDup) {
                     movieEntry.showtimes.push({

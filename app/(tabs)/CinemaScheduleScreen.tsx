@@ -1,7 +1,8 @@
+//售票時程頁面
 import { ZenKurenaido_400Regular, useFonts } from '@expo-google-fonts/zen-kurenaido';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useIsFocused } from '@react-navigation/native'; // 1. 引入 Hook
+import { useIsFocused } from '@react-navigation/native';
 import * as WebBrowser from 'expo-web-browser';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useMemo, useState } from 'react';
@@ -97,7 +98,7 @@ export default function CinemaTicketScheduleScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-      {/* 💡 自定義圓角 Toast */}
+      {/* 自定義圓角 Toast */}
       <AnimatePresence>
         {toast.visible && (
           <MotiView
